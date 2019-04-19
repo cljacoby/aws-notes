@@ -1,8 +1,7 @@
 # IAM
 
-## Identity Access Management 101
 
-### What is IAM
+## What is IAM
 * IAM allows managing users level of access in the AWS consol
 * Grants permission to different aspects of AWS
 * Granular permission control
@@ -28,7 +27,7 @@
 * A role describes ways different resources in AWS may interact with each other.
 * For example, a role might specify that an EC2 isntance is privelaged to right to an S3 bucket1
 
-### Summary of IAM Lab
+### Summary of IAM Fundamentals
 * IAM is universal, and not specific to a region (at this time)
 * The root account is the account created when you create your AWS account, and it has complete Admin access
 * New users by default have **NO** permissions when first created
@@ -38,9 +37,6 @@
 * Your Access Key ID and Secrey Access Key will only be visible once, so save the CSV file of the keys somewhere secure
 * Use MFA to protect access to the root account. MFA uses Google Authenticator app
 * Can customize password rules (such as minimum length and inclusion of special characters) and rotation timefram
-
-### Summary of Creating a Billing Alarm Lab
-* Ryan creates a 10 dollar billing alarm that sends email notification
 
 ### IAM Exam Review
 * IAM consists of the following:
@@ -68,9 +64,7 @@
 
 # S3
 
-## S3 101
-
-### What is S3
+### What is S3?
 * Simple Storage Service
 * Provides developers securable, durable, 1highly scalable, object storage
 * Simply put, a way to store files
@@ -97,7 +91,7 @@
 * Eventually, the modification will become consistent and reflect the changes
 * acloudguru says after about a minute, the data consistency of modified files will be accurate
 
-### S3 is a Simple Key-Value Storage
+### S3 as a Simple Key-Value Storage
 * S3 is a object based, which means it works for storing files of all varieties, but is not capable of installing an operating system or database
 * S3 stores files via a key-value storage
 * The key is the file name, and the value is the actual file contents
