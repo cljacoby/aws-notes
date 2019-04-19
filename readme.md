@@ -136,4 +136,92 @@
     * **Standard** 
     * **Bulk**
 
+### S3 Charges
+Charged for:
+* Storage of files
+* Requests, a.k.a. downloading stored files
+* Storage Management Pricing, a.k.a. limiting access to S3 items via tagging
+* Data Transfer Pricing, a.k.a. transferring data from one region to another
+* S3 Transfer Acceleration
 
+## S3 Transfer Acceleration
+* Enables fast, easy, and secure transfer of files between end users and an S3 bucket
+* Uses CloudFront, which is a network globally distributed edge locations
+* Basically data is routed over an optimized network path
+
+## S3 Exam Tips
+* S3 is object based storage
+* Object based storage allows uploading files but not installing an operating system which would be blolock based storage
+* Files can be 0 Bytes to 5 TB
+* Files are stored in buckets, which are like directories on a file system
+* S3 is a universal namespace, so bucket names must be universally unique
+* Example of S3 bucket URL:
+  * `https://s3-eu-west-1.amazonaws.com/acloudguru`
+* Read-after-Write consistency for PUTS of new objects
+* Eventual consistency for overwrite PUTS and DELETES (can take time to propogate across regions)
+* S3 is available in the following tiers:
+  * S3 (or S3 standard)
+		* Durable, immediately available, frequently accessed
+  * S3 - IA (Infreqently Accessed)
+		* Durable, immediately avaialable, infrequently accessed
+    * Cheaper flat rate than S3, but charged per retrieval
+  * S3 One Zone IA
+		* Even cheaper version of S3 IA, but only available in one availability zone
+  * Glacier
+		* Data archival service
+		* Standard retrieval time is 3-5 hours, although different pricing models are avaialbe for this
+* Fundamentals of an S3 object:
+	* Key (file name)
+  * Value (file contents)
+  * Version ID
+  * Subresources
+    * ACL (Access Control Lists)
+    * Torrent info
+* Uplpoading to S3 will return an HTTP 200 response status code on succesful upload
+
+### S3 Create an S3 Bucket Exam Tips
+* Buckets are a universal namespace
+* Uploading an object to an S3 bucket succesfully produces an HTTP 200 response status code
+* Supports encryption:
+	* Client side encryption
+	* Server side encrpytion with Amazon S3 Managed Keys (SSE-S3)
+  * Server Side encrpytion with customer provided keys (KMS)
+	* Control access to buckets using either a bucket ACL or Bucket policies
+* By default buckets are private and all objects uploaded to a bucket are private
+
+
+### S3 Versioning Lab Exam Tips
+* By defualt versioning is disabled, and must be enabled
+* Once versioning is enabled, versioning cannot be disabled, only suspended
+* When a new version of a file is uploaded to a bucket, overriding an existing version that was set to public, the object will be private and must be reset to public
+* There is support to restrict deletes to MFA only
+* Versioning stores all versions of an object
+* Versioning integrates with lifecycle rules
+
+### Cross Region Replication Lab
+* Cross region replication requires versioning to be enabled in source and destination bucket
+* Regions must be unique
+* Files in an existing bucket are not replicated automatically. All subsequent updated files will be replicated automatically.
+* You cannot replicate to multiple buckets or use daisy chaining (at this time)
+* Delete markers are not replicated
+* Deleting individual versions or delte markers will not be replicated
+
+### S3 Lifecycle Managemenet Exam Tips
+* Can be used in conjunction with versioning
+* Can be applied to current versions, and previous versions
+* Following actions can be set up on time basis:
+  * Transition to S3 IA, such as 30 days after upload
+  * Archive to Glacier, such as 30 days after adding to S3 IA
+  * Permanently Delete
+
+
+
+
+# Glossary
+| Term | Definition |
+| ---- | ---------- |
+| Availability Zone | |
+| Region | |
+| S3 | |
+| Infrequent Access (IA) | |
+| Identity Access Managenet (IAM) | |
