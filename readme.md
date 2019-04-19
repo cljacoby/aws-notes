@@ -12,22 +12,22 @@
 * Supports PCI DSS Compliance
 * **IAM is incredibly important, as it defines the rules by which all other AWS resources will interact/operate**
 
-### Terminology
+## Terminology
 
-#### 1. Users
+## 1. Users
 * End users such as people, employees of a company, etc.
 
-#### 2. Groups
+## 2. Groups
 * Groups of people. Each user in group inherits permission in group.
 
-#### 1. Policies
+## 1. Policies
 * Policies are made up of documents called Policy Documents. These docuemntsare in JSON format and defined what a User/Group/Role is able to do
 
-#### 1. Roles
+## 1. Roles
 * A role describes ways different resources in AWS may interact with each other.
 * For example, a role might specify that an EC2 isntance is privelaged to right to an S3 bucket1
 
-### Summary of IAM Fundamentals
+## Summary of IAM Fundamentals
 * IAM is universal, and not specific to a region (at this time)
 * The root account is the account created when you create your AWS account, and it has complete Admin access
 * New users by default have **NO** permissions when first created
@@ -38,7 +38,7 @@
 * Use MFA to protect access to the root account. MFA uses Google Authenticator app
 * Can customize password rules (such as minimum length and inclusion of special characters) and rotation timefram
 
-### IAM Exam Review
+## IAM Exam Review
 * IAM consists of the following:
   * User
     * Users are the individual end users of the AWS resources
@@ -64,13 +64,13 @@
 
 # S3
 
-### What is S3?
+## What is S3?
 * Simple Storage Service
 * Provides developers securable, durable, 1highly scalable, object storage
 * Simply put, a way to store files
 * Able to store any size files, and accessable anywhere on the web
 
-### S3 Basics
+## S3 Basics
 * Allows you to upload files
 * Files may be between 0 Bytes and 5 TB
 * AWS charges by the GB for file uploads
@@ -83,7 +83,7 @@
   * `s3-eu-west-1` is the regio
 * Uploading a file to a bucket returns an HTTP 200 response status on succesful ulpload
 
-### Data Consistency Model for S3
+## Data Consistency Model for S3
 * Read after write consistency for PUTS of new objects
 * Eventual consistency for overwrite PUTS and DELTES (can take some time to propogate)
 * Basically, after writing a new file (a.k.a. a new upload), the file will be immediately readable and its state will be accurate
@@ -91,7 +91,7 @@
 * Eventually, the modification will become consistent and reflect the changes
 * acloudguru says after about a minute, the data consistency of modified files will be accurate
 
-### S3 as a Simple Key-Value Storage
+## S3 as a Simple Key-Value Storage
 * S3 is a object based, which means it works for storing files of all varieties, but is not capable of installing an operating system or database
 * S3 stores files via a key-value storage
 * The key is the file name, and the value is the actual file contents
@@ -130,7 +130,7 @@
     * **Standard** 
     * **Bulk**
 
-### S3 Charges
+## S3 Charges
 Charged for:
 * Storage of files
 * Requests, a.k.a. downloading stored files
@@ -173,7 +173,7 @@ Charged for:
     * Torrent info
 * Uplpoading to S3 will return an HTTP 200 response status code on succesful upload
 
-### S3 Create an S3 Bucket Exam Tips
+## S3 Create an S3 Bucket Exam Tips
 * Buckets are a universal namespace
 * Uploading an object to an S3 bucket succesfully produces an HTTP 200 response status code
 * Supports encryption:
@@ -184,7 +184,7 @@ Charged for:
 * By default buckets are private and all objects uploaded to a bucket are private
 
 
-### S3 Versioning Lab Exam Tips
+## S3 Versioning Lab Exam Tips
 * By defualt versioning is disabled, and must be enabled
 * Once versioning is enabled, versioning cannot be disabled, only suspended
 * When a new version of a file is uploaded to a bucket, overriding an existing version that was set to public, the object will be private and must be reset to public
@@ -192,7 +192,7 @@ Charged for:
 * Versioning stores all versions of an object
 * Versioning integrates with lifecycle rules
 
-### Cross Region Replication Lab
+## Cross Region Replication Lab
 * Cross region replication requires versioning to be enabled in source and destination bucket
 * Regions must be unique
 * Files in an existing bucket are not replicated automatically. All subsequent updated files will be replicated automatically.
@@ -200,7 +200,7 @@ Charged for:
 * Delete markers are not replicated
 * Deleting individual versions or delte markers will not be replicated
 
-### S3 Lifecycle Managemenet Exam Tips
+## S3 Lifecycle Managemenet Exam Tips
 * Can be used in conjunction with versioning
 * Can be applied to current versions, and previous versions
 * Following actions can be set up on time basis:
