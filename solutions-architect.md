@@ -40,7 +40,7 @@
 * Can customize password rules (such as minimum length and inclusion of special characters) and rotation timefram
 
 ### Summary of Creating a Billing Alarm Lab
-* Creates a 10 dollar billing alarm that sends email notification
+* Ryan creates a 10 dollar billing alarm that sends email notification
 
 ### IAM Exam Review
 * IAM consists of the following:
