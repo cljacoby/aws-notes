@@ -260,25 +260,60 @@ Charged for:
   * Secured using SSL/TLS
 * **At Rest**:
   * Data existing in the bucket
-  * There are 4 methods for securing data at rest
+  * There are 4 methods for securing data at rest:
+    * **SSE-S3**
+    * **SSE-KMS**
+    * **SSE-C**
+    * **Client Side Encryption**
 
 #### Encryption of Data at Rest
-* **One**
-  * one
-* **One**
-  * one
-* **One**
-  * one
-* **One**
-  * one
 
-##### Server Side Encrpytion:
-1. one
-2. two
-3. three
+#### Server Side Encrpytion
+* **Server Side Encryption**
+  * **S3 Manage Keys - (SSE-S3)**
+    * Each object is encrypted by a unique key
+    * Each key itself is encrypted itself with a master key, and the master keys are regularly rotated
+    * Amazon handles all keys for the users
+    * AES256 Encryption of data
+    * User simply uses **Encrypt** option on object
+* **AWS Key Management Service, Managed Keys (SSE-KMS)**
+  * Similar to SSE-S3, but with additional benefits and additional charges
+  * Seperate permissions for use of envelope key
+  * An **Envelope Key** is a key that protects the data encryption keys
+  * Adds another level of additional protection
+  * **SSE-KMS** also provides an Audit Trail feautre, which shows who is decrpypting objects and when
+  * **SSE-KMS** also has options of creating/managing keys yourself, as well as using the default key
+* **Server Side Encryption with Customer Provided Keys (SSE-C)** 
+  * Allows user to provide their own keys, and amazon uses the customer's provided keys to encrpyt/decrpyt files when reading/writing to disk
 
-##### another section
-4. four    
+#### Client Side Encryption
+* Client encrypts their own objects, and upload the encrpyted objects to S3
+* Client decrpyts object when the pull manully encrypted files from S3 
+ 
+
+### Storage Gateway
+* AWS Storage Gateway is a services that connects an on-premises software appliance with cloud-based storage
+* Provides seamless and secure connection between data center processesing with AWS S3 cloud based storage
+* Storage Gateway's software appliance is available for download as a virutal machine image that you install in the data center
+* Supports both VMware ESXi and Microsoft Hyper-V
+* Storage Gateway is basically a virtual machine
+
+#### Types of Storage Gateways
+* **File Gateway (NFS)**
+  * Store flat files in S3
+* **Volumes Gateway (iSCSI)**
+  * Store files in block based storage
+  * Can store flat files, but also save virtual hard disk with a virtual machine or database installed on
+  * Two Types:
+    * **Stored Volumes**
+    * **Cached Volumes** 
+* **Tape Gateway (VTL)**
+
+### File Gateway
+* Files are stored in S3 buckets and accessed through an NFS mount point
+* Ownership, permissions, and timestamps are durably stored in S3 in the user-metadata of the object associated with the file
+* Once objects are transferred to S3, they can be manipulated as regular S3 objects
+
 
 
 # Glossary
@@ -299,22 +334,12 @@ Charged for:
 | Elastic Load Balancer (ELB) ||
 | Time to Live (TTL) | |
 | Invalidation  |   | 
+| Storage Gateway |  | 
+| SSE-SSE  |  | 
+| SSE-KMS  |  | 
+| SSE-C  |  | 
+
+
 <!--
 |  |  | 
-|  |  | 
-|  |  | 
-|  |  | 
-|  |  | 
-|  |  | 
-|  |  | 
-|  |  | 
-|  |  | 
-|  |  | 
-|  |  | 
-|  |  | 
-|  |  | 
-|  |  | 
-|  |  | 
-|  |  | 
-|  |  |
 -->
