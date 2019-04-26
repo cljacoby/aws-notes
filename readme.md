@@ -209,6 +209,39 @@ Charged for:
   * Permanently Delete
 
 
+## CloudFront CDN
+* **Content Delivery Network (CDN)** is a system of distributed servers (a network) that deliver web pages and other content to a user based on the geographic locations of the user, the origin of the webpage, and the content deliviring server
+* Basically, rather than distributing web content from a single central location, the contnet is cached on edge locations closer to the end users
+* Key components of CDN:
+  * **Edge Location**: This is the location where content will be cached. Different than an AWS Region/AZ
+  * **Origin**: The origin of all the web resource files the CDN will distrubut. Can be an EC2, an ELB, or Route53
+  * **Distribution**: THe name given to the CDN which consists of a collection of edge locations  
+* Process Overview:
+  1. User makes a request to a URL. This URL is a distribution URL.
+  2. The request is routed to the closest edge location to the user
+  3. The edge location server determines if the requested resource is already cached
+  4. If the file is cached, the edge location server serves the content back to the use
+  5. If the content is not already cached, the edge location server requests the resource from the origin server
+  6. When the resource is served from the origin, the edge server cahces the resource, and serves it back to the end user
+* The performance advantage from the CDN is only effectual after the content is cached, a.k.a. after an end user has reqeusted a specific resource
+* The file is cached on the edge location for the duration of the **Time to Live (TTL)**
+* The TTL is an important design consideration, as a poorly chosen TTL such as one longer than the average update time will induce lots of manual cache emptying, which costs mone
+* CloudFront offers a Web Access Firewall (WAF), which is an application level firewall, mainly used to prevent SQL injections
+* Creating and updates of CloudFront distrubutions often take 15-20 minutes for changes to propogate out to the edges
+* Cloudfrount allows Whitelisting and Blacklisting geographic regions by the **Edit Geo-Locations** feature
+* CloudFront allows **Invalidations**, which stops files from being cached on edge locations, but must be manually triggered and costs money
+* Invalidations are used when you accidnelty push a change you wihs to stop from propogating to the edge locations
+
+
+### Key Terminology:
+* **Web Distribution**: Typically used for static websites
+* **RTMP**: Used for media streaming
+
+### Examp Tips
+* An **Edge Location** is the location (server) where the content will be cached. Seperate from the AWS Region and AZ
+* An **Origin** is the origin of all the files the CDN will distribute. This can be an S3 Bucket, EC2 isntance, Elastic Load Balancer, or Route53
+* Considering TTL at design time, mainly in reference to rate of updates
+* Use presigned URLs or presigned cookeis to secure content behind an authentication
 
 
 # Glossary
@@ -217,5 +250,34 @@ Charged for:
 | Availability Zone | |
 | Region | |
 | S3 | |
+| Glacier | |
 | Infrequent Access (IA) | |
 | Identity Access Managenet (IAM) | |
+| Content Delivery Network (CDN) | |
+| KMS | |
+| End Use | |
+| Edge Location | |
+| Route 53 | |
+| Elastic Cloud Compute (EC2) | |
+| Elastic Load Balancer (ELB) ||
+| Time to Live (TTL) | |
+| Invalidation  |   | 
+<!--
+|  |  | 
+|  |  | 
+|  |  | 
+|  |  | 
+|  |  | 
+|  |  | 
+|  |  | 
+|  |  | 
+|  |  | 
+|  |  | 
+|  |  | 
+|  |  | 
+|  |  | 
+|  |  | 
+|  |  | 
+|  |  | 
+|  |  |
+-->
