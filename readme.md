@@ -256,19 +256,19 @@ Charged for:
 ### Encryption
 * Two types of encryption:
 
-### In Transit:
+#### In Transit:
   * Data in the process of being sent to/from a computer to the S3 bucket
   * Secured using SSL/TLS
-### At Rest:
+#### At Rest:
   * Data existing in the bucket
   * 4 methods for encrypting data at rest:
 
-#### Server Side Encrpytion:
+##### Server Side Encrpytion:
 1. one
 2. two
 3. three
 
-#### another section
+##### another section
 4. four    
 
 
