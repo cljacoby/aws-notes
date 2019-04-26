@@ -268,7 +268,7 @@ Charged for:
 
 #### Encryption of Data at Rest
 
-#### Server Side Encrpytion
+##### Server Side Encrpytion
 * **Server Side Encryption**
   * **S3 Manage Keys - (SSE-S3)**
     * Each object is encrypted by a unique key
@@ -286,7 +286,7 @@ Charged for:
 * **Server Side Encryption with Customer Provided Keys (SSE-C)** 
   * Allows user to provide their own keys, and amazon uses the customer's provided keys to encrpyt/decrpyt files when reading/writing to disk
 
-#### Client Side Encryption
+##### Client Side Encryption
 * Client encrypts their own objects, and upload the encrpyted objects to S3
 * Client decrpyts object when the pull manully encrypted files from S3 
  
@@ -314,6 +314,16 @@ Charged for:
 * Ownership, permissions, and timestamps are durably stored in S3 in the user-metadata of the object associated with the file
 * Once objects are transferred to S3, they can be manipulated as regular S3 objects
 
+### Volume Gateway
+* An interface that presents an application with disk volumes
+* Volumes use iSCSI block based storage
+* Acts as a virtual hard drive service
+* Volumes can be snapshotted and stored as backups using **Elastic Block Store (EBS)**
+* Snapshots are incremental, meaning only the changes from the last snapshot are stored
+* Snapshots are also compressed when stored to minimize storage costs
+
+### Volume Storage Architecture Diagram
+![Volume Storage Architecture Diagram](/aws-notes/images/volume_storages_architecture.png) 
 
 
 # Glossary
@@ -338,6 +348,7 @@ Charged for:
 | SSE-SSE  |  | 
 | SSE-KMS  |  | 
 | SSE-C  |  | 
+| Elastic Block Store (EBS) |  | 
 
 
 <!--
