@@ -254,14 +254,13 @@ Charged for:
 * S3 buckets can be configured to create access logs, which log all requests made to the S3 bucket
 
 ### Encryption
-* Two types of encryption:
-
-#### In Transit:
-  * Data in the process of being sent to/from a computer to the S3 bucket
-  * Secured using SSL/TLS
-#### At Rest:
-  * Data existing in the bucket
-  * 4 methods for encrypting data at rest:
+* There are two types of encryption:
+  1. **In Transit**:
+   * Data in the process of being sent to/from a computer to the S3 bucket
+    * Secured using SSL/TLS
+  2. **At Rest**:
+    * Data existing in the bucket
+    * 4 methods for encrypting data at rest:
 
 ##### Server Side Encrpytion:
 1. one
