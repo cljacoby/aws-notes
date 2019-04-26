@@ -323,7 +323,7 @@ Charged for:
 * Snapshots are also compressed when stored to minimize storage costs
 
 ### Volume Storage Architecture Diagram
-![Volume Storage Architecture Diagram](/aws-notes/images/volume_storages_architecture.png) 
+![Volume Storage Architecture Diagram](/images/volume_storages_architecture.png) 
 
 
 # Glossary
