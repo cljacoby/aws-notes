@@ -242,6 +242,29 @@ Charged for:
 * An **Origin** is the origin of all the files the CDN will distribute. This can be an S3 Bucket, EC2 isntance, Elastic Load Balancer, or Route53
 * Considering TTL at design time, mainly in reference to rate of updates
 * Use presigned URLs or presigned cookeis to secure content behind an authentication
+* CloudFront allows **Invalidations**, which stop a pushed change from propogating to all the edge locations, but costs a fee
+* In addition to reading files, CloudFront also allows writing changes to the edge locations, which are then propogated back to the origin
+
+
+## S3 Security and Encryption
+* By default, all newly created buckets are private
+* You can setup access to your buckets using:
+  * Bucket Policies
+  * Access Control Lists
+* S3 buckets can be configured to create access logs, which log all requests made to the S3 bucket
+
+### Encryption
+* Two types of encryption:
+  1. In Transit:
+    * Data in the process of being sent to/from a computer to the S3 bucket
+    * Secured using SSL/TLS
+  2. At Rest:
+    * Data existing in the bucket
+    * 4 methods for encrypting data at rest:
+     
+	 **Server Side Encryption**:
+	1. sdf
+	2. asd
 
 
 # Glossary
