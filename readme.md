@@ -1,6 +1,5 @@
 # IAM
 
-
 ## What is IAM
 * IAM allows managing users level of access in the AWS consol
 * Grants permission to different aspects of AWS
@@ -73,6 +72,7 @@
 ## S3 Basics
 * Allows you to upload files
 * Files may be between 0 Bytes and 5 TB
+* For large file uploads to an S3 bucket, design your API to use the Multipart Upload API for all objects
 * AWS charges by the GB for file uploads
 * S3 is organized into "buckets", which are interactable like directories on a file system
 * Individual files are stored inside a bucket
@@ -172,6 +172,7 @@ Charged for:
     * ACL (Access Control Lists)
     * Torrent info
 * Uplpoading to S3 will return an HTTP 200 response status code on succesful upload
+* Default limit of 100 buckets per account in S3
 
 ## S3 Create an S3 Bucket Exam Tips
 * Buckets are a universal namespace
@@ -314,16 +315,206 @@ Charged for:
 * Ownership, permissions, and timestamps are durably stored in S3 in the user-metadata of the object associated with the file
 * Once objects are transferred to S3, they can be manipulated as regular S3 objects
 
-### Volume Gateway
+### Stored Volumes
 * An interface that presents an application with disk volumes
 * Volumes use iSCSI block based storage
 * Acts as a virtual hard drive service
 * Volumes can be snapshotted and stored as backups using **Elastic Block Store (EBS)**
 * Snapshots are incremental, meaning only the changes from the last snapshot are stored
 * Snapshots are also compressed when stored to minimize storage costs
+* Snapshots are flat files, and can (and are) stored in S3
+
+### Stored Volumes Highlights
+* Stored volumes act as a virtual hard-dirk
+* There is a complete copy of all data  on premesise at any given time, and this acts as the data source for the application server
+* Over time, backups of the volume are incrementally stored to S3
+* Allows volume size of 16TB (double check this)
 
 ### Volume Storage Architecture Diagram
-![Volume Storage Architecture Diagram](/images/volume_storages_architecture.png) 
+![Volume Storage Architecture Diagram](/images/stored_volumes_architecture.png) 
+
+### Cached Volumes
+* Cached Volumes let you use S3 as your primary data source
+* Only the frequently accessed data is kept on premise, measured by most recenrtly read
+* The rest of the data is stored on S3
+* Allows storing volumes of up to 32TB
+
+### Cached Volumes Architecture Diagram
+![Cached Volumes Architecture Diagram](/images/cached_volumes_architecture.png) 
+
+### Tape Gateway
+* Tape gateway offers a durable, cost-effective way to archive data in the cloud
+* Supported by NetBackup, Backup Exec, Veeam
+* Basically creates an archive file, and stores the archive in S3
+* Can also setup lifecycle rules in the S3 bucket to also backup archives to glacier
+
+### Storage Gateway Exam Tips
+* File Gateway is for flat files and stored them directly in S3
+* No block based storage or installed OS, databases, etc.
+* **Volume Gateway**:
+  * **Stored Volumes**: Entire dataset is stored on site and is asynchronsouly backup up to S3
+  * **Cached Volumes**: Entire dataset is stored on S3 and the most frequently accessed files are cached on site
+* **Gateway Virtual Tape Library (VTL)**
+  * Used for backup and uses popular backup applications like NetBackup, Backup Exec, and Veeam
+* Exam questions will likely be scenario based, and ask the testee to evaluate which service is best for a given use case
+
+## Snowball
+* Snowball came from an older service called **Import/Export Disc**
+* This service allowed mailing physical hard drives to upload/download data directly from disk at an Amazon location
+* Normally for large amounts of data (i.e. >1TB), possibly combined with an otherwise slow internet connection
+* To fix this, Amazon expanded the service by offering three options:
+  * **Snowball**
+  * **Snow Edge**
+  * **Snowmobile**
+
+### Snowball
+* A physical device mailed by Amazon, roughly the size of a suitcase, which allows petebyte-scale storage
+* Basically, you load a large amount of data on to the Snowball and mail it back to Amazon and they load it into AWS of the drive
+* Normally used due to network speed, network costs, or securuty concerns
+* Available in 80TB size (possibly other size)
+* Only has onboard storage capacity, not compute capacity
+* Data is encrypted on the device using 256-bit encryption
+* Amazon ensures software erasure of data from Snowball device after use is done
+
+### Snowball Edge
+* Similar to Snowball, but with 100TB size and onboard compute capacity
+* Somewhat like a miniture AWS data center
+* Can run AWS Lambda functions from Snowball Edge
+* Example use: A running airplane uses a Snowball Edge to collect data during flight. Lambda functions execute and store metrics appropriately during flight, and data is offloaded after flight
+
+### Snowmobile
+* A 100PB (petabyte) storage and data transfer solution
+* Literally a shipping container of data storage on an 18-wheeler truck
+* Only used by large companies to move massive amounts of data
+
+### Exam Tips for Snowball
+* Know what Snowball is
+* Know that Import/Export drive was the original service Snowball came from
+* Know Snowball can:
+  * Import from Snowball to S3
+  * Export from S3 to Snowball
+
+## S3 Transfer Acceleration
+* S3 Transfer Acceleration uses CloudFront to accelerate uploads to S3
+* You upload data directly to an Edge Location of the CloudFront CDN, which then transfer the file to S3
+* Since buckets are created with respect to a region, users far from that region would otherwise have slow speeds uploading/downloading to the bucket
+
+## S3 Final Overview & Summary
+* S3 is object based storage, and allows storage of flat files, not installation of OS, database, application, etc.
+* To do OS or database, you would need block based storage, which would normally be an EBS
+* Files can be 0 Bytes to 5TB
+* There is unlimited storage
+* Files are stored in buckets
+* S3 is a universal namespace, so names must be globally unique and must be all lowercase
+* S3 bucket name format is `http[s]://region.amazonaws.com/bucketname`
+* **Consistency Model**:
+  * Read after Write immediate consistency for PUTS of new objects. When a new file is uploaded, it will immediately be readable
+  * Eventual consistency for overwrite PUTS and DELETS of existing objects. Can take time to propogate changes. Should be ~15 mins for consistency
+* **Tiers**:
+  * **S3 Standard**:
+    * 99.99% availability
+    * 99.999999999% durability
+    * Stored reduntantly across multiple devices in multiple data centers
+    * Designed to sustain loss of 2 facilities concurrently
+  * **S3 - IA**:
+    * 99.99% Availability
+    * Infrequently Accessed
+    * For data that is accessed less frequently, but requried rapid access when needed
+    * Lower storage fee, but charged for retirevals
+  * **S3 One Zone - IA**:
+    * An even lower cost verison of S3 - IA that is only stored in one data center
+    * Replaces Reduced **Redundany Store (RRS)**
+  * **Glacier**:
+    * Intended for data archival
+    * Split into three sub-tiers: **Expediated**,  **Standard**, and **Bulk**, which deliver retrieval rates
+    * The slower the retrieval time, the cheaper the pricing
+    * **Standard** retrieval time is 3-5 hours
+
+## S3 Other
+* Until 2018 there was a hard limit of 100 PUTS per second
+* To achieve this limit, care needed to be taken with the object's Key
+* In 2018, amazon raised the limit to 3500, which essentially eliminates the problem
+* Amazon doesnt recomend needed action with Key naming for performance
+* More:
+  * https://aws.amazon.com/about-aws/whats-new/2018/07/amazon-s3-announces-increased-request-rate-performance/
+  * https://docs.aws.amazon.com/AmazonS3/latest/dev/request-rate-perf-considerations.html
+  * https://aws.amazon.com/s3/storage-classes/
+ 
+# Elastic Cloud Compute (EC2)
+
+## EC2 Overview
+
+* Elastic Cloud Compute (EC2) is a web services that provides resizable compute capacity in the cloud
+* Reduces time to boot a new server instance to minutes, allowing users to quickly scale up and dlown as needed
+* Also mitigates huge capital investment of server racks for companies
+* Pricing Models:
+  * **On Demand**:
+    * You pay a fixed rate by the hour (or second) with no commitments
+    * Great for development and testing, where you can start and stop as needed
+  * **Reserved**:
+    * Provides you with a capacity reservation, and offers a significatn discout compared to hourly charge
+    * Contract terms are 1 - 3 years
+  * **Spot**:
+    * Occurs when amazon has abundance of compute due to momentary dip in overall consumption
+    * Amazon lowers prices to encourage people to buy the surplus
+    * You bid at a price, by setting a price you're willing to pay for, and when the price drops that low, you get computer
+    * When the price raises above your threshold, you lose compute again within minutes 
+  * **Dedicated Hosts**:
+    * Physical EC2 servers dedicated for your use
+    * Allow to use your existing server-bound software licenses, such as Oralce products
+
+## EC2: On Demand
+* Users who want the lost cost and flexibility of EC2, without up front payments or long term comittments
+* Useful for applications with short term or spiky, unpredictable workloads that cannot be interupted
+* Useful for applications in development/testing, or applications being ported to AWS for the first time
+
+## EC2: Reserved Pricing
+* Applications with steady state, predictable usage
+* Applications that have a required reserved capacity
+* Users get lower cost per compute resource, but make upfront payment and have payment commitments
+* Reserved pricing options:
+  * **Standard Reserved Instanes**:
+    * Offer up to 75% off on demand pricing options. 75% is the maximum discount, not base level
+    * The more you pay up front, and the longer the contract, the larger discount you get
+  * **Standard Reserved Instanes**:
+    * Offer up to 54% off on demand pricing options. 75% is the maximum discount, not base level\
+    * EC2's are like virtual machines, and certain EC2 have different RAM and CPU specifications
+    * Standard EC2 instances don't allow flexibile conversion of EC2 isntance types
+    * With convertible you can, which is useful for meeting variable demands such as high memory spikes
+  * **Schedules Reserved Instances**:
+    * These are instnaces which launch on a time schedule
+    * This allows scaling up and scaling down based on a predictable time schedule
+
+## EC2: Spot Pricing
+* Useful for applications that have flexible start and end times
+* Useful for applications that are only feasible at very cheap compute pricing
+* Users with computing needs for large amounts amount of additional capacity
+
+## EC2: Dedicated Hosts Pricing
+* Useful for regulatory requirements that may not support multi-tennant virtualization
+* Useful for licencsing that does not allow multi-tenant virtualization, or cloud deploymnents (such as Orcale's licenses)
+* Can be purchased as either Reserved or On-Demand
+* Similar to standard EC2, Reserved dedicated hosts are cheaper than On-Demand
+
+### EC2 Instance Types:
+| Family | Speciality | Use Cases |
+| ------ | ---------- | --------- |
+| F1 | Field Programmable Gate Array | Genomics research, financial anlytics, real-time video processing, big data |
+| I3 | High Speed Storage | NoSQL DBs, Data Warehousing |
+| G3 | Graphics Intensive | Video Encoding, 3D Application Streaming |
+| H1 | High Disk Throughput | MapReduce workloads, distrubuted file systems, HDFS, MapR-FS |
+| T3 | Loweest Cost, General Purpose | Web Servers, Small DBs |
+| D2 | Dense Storage | File Servers, Data Warehousing, Hadoop |
+| R5 | Memory Optimized | Memory Intensive Apps, DBs |
+| M5 | General Purpose | Applicaiton Servers |
+| C5 | Compute Optimized | CPU Intensive Apps, DBs |
+| P3 | Graphics/General Purpose GPU  | Machine Learning, Bit Coin Mining |
+| X1 | Memory Optimized | SAP HANA, Apache Spark |
+| Z1D | High compute capactiy and high memory | Electronic Design Automation (EDA), certain RDBMS sysyems with high per-core licesnsing costs |
+| A1 | Arm-based workloads | Scale-out workloads like web servers |
+| U-6b1 | Bare Metal | Bare metal applications that eliminate virtualization overhead |
+
+
 
 
 # Glossary
@@ -349,7 +540,7 @@ Charged for:
 | SSE-KMS  |  | 
 | SSE-C  |  | 
 | Elastic Block Store (EBS) |  | 
-
+| Redundany Store (RRS) |  |
 
 <!--
 |  |  | 
