@@ -476,12 +476,12 @@ Charged for:
   * **Standard Reserved Instanes**:
     * Offer up to 75% off on demand pricing options. 75% is the maximum discount, not base level
     * The more you pay up front, and the longer the contract, the larger discount you get
-  * **Standard Reserved Instanes**:
+  * **Convertible Reserved Instanes**:
     * Offer up to 54% off on demand pricing options. 75% is the maximum discount, not base level\
     * EC2's are like virtual machines, and certain EC2 have different RAM and CPU specifications
     * Standard EC2 instances don't allow flexibile conversion of EC2 isntance types
     * With convertible you can, which is useful for meeting variable demands such as high memory spikes
-  * **Schedules Reserved Instances**:
+  * **Scheduled Reserved Instances**:
     * These are instnaces which launch on a time schedule
     * This allows scaling up and scaling down based on a predictable time schedule
 
@@ -496,7 +496,7 @@ Charged for:
 * Can be purchased as either Reserved or On-Demand
 * Similar to standard EC2, Reserved dedicated hosts are cheaper than On-Demand
 
-### EC2 Instance Types:
+## EC2 Instance Types:
 | Family | Speciality | Use Cases |
 | ------ | ---------- | --------- |
 | F1 | Field Programmable Gate Array | Genomics research, financial anlytics, real-time video processing, big data |
@@ -514,7 +514,17 @@ Charged for:
 | A1 | Arm-based workloads | Scale-out workloads like web servers |
 | U-6b1 | Bare Metal | Bare metal applications that eliminate virtualization overhead |
 
+* Note that the numbers like `F1` can change, as they indicate generation
 
+## EC2 Overview Summary
+* Amazon Elastic Cloud Compute (EC2) is a web service that provides resizable compute capacity in the cloud
+* Allows you to provision server computing in minutes rather than weeks/months by buying/building your own racks
+* Allows easy scaling up and scaling down
+* Different price tiering: **On-Demand**, **Reserved**, **Spot**, **Dedicated Hosts**
+* Different sub-tiers of Reserved EC2: **Standard**, **Convertible**, **Scheduled**
+
+
+ 
 
 
 # Glossary
