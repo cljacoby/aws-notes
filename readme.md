@@ -515,6 +515,7 @@ Charged for:
 | U-6b1 | Bare Metal | Bare metal applications that eliminate virtualization overhead |
 
 * Note that the numbers like `F1` can change, as they indicate generation
+* Memorizing EC2 instnace type isnt neccessary for Solutions Architect Associate, but is for higher level course
 
 ## EC2 Overview Summary
 * Amazon Elastic Cloud Compute (EC2) is a web service that provides resizable compute capacity in the cloud
@@ -523,6 +524,13 @@ Charged for:
 * Different price tiering: **On-Demand**, **Reserved**, **Spot**, **Dedicated Hosts**
 * Different sub-tiers of Reserved EC2: **Standard**, **Convertible**, **Scheduled**
 
+## EC2 Lab
+* Availability zone names are different between accounts (this was uncklear)
+* Adding an additional volume allows addition of more volume types
+* Security Group is a virtual firewall
+* Tags allow keeping track via labeling
+* SSH goes across port 22
+* HTTP goes accros port 80
 
  
 
