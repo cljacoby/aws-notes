@@ -566,13 +566,13 @@ Charged for:
   * **Magnetic**
 
 ## EBS Types
-| EBS Type | SSD/HDD | Volume Type | Description | Use Cases | API Name | Volume Size | Max IOPS/Volume 
-| -------- | ------- | ----------- | ----------- | --------- | -------- | ----------- |
-| **General Purpose SSD** |  |  |  |  |  |
-| **Provisioned IOPS SSD** |  |  |  |  |  |
-| **Throughput Optimized HDD** |  |  |  |  |  |
-| **Cold HDD** |  |  |  |  |  |
-| **EBS Magnetic** |  |  |  |  |  |
+| EBS Type | SSD/HDD | Volume Type | Description | Use Cases | API Name | Volume Size | Max IOPS/Volume |
+| -------- | ------- | ----------- | ----------- | --------- | -------- | ----------- | --------------- |
+| **General Purpose SSD** |  |  |  |  |  |  |  |
+| **Provisioned IOPS SSD** |  |  |  |  |  |  |  |
+| **Throughput Optimized HDD** |  |  |  |  |  |  |  |
+| **Cold HDD** |  |  |  |  |  |  |  |
+| **EBS Magnetic** |  |  |  |  |  |  |  |
 
 
 # Glossary
