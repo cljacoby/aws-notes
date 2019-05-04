@@ -532,7 +532,47 @@ Charged for:
 * SSH goes across port 22
 * HTTP goes accros port 80
 
- 
+## EC2 Lab 2
+* Termination Protection blocks shutting down the EC2 so you dont accidently stop it. To actually shut down, you go back in and turn Termination Protection off then shut down the EC2
+* Termination Protection is turned off by defualt and must be enabled
+* On an EBS-backed instance, the default action is for the root EBS volume to be deleted when the instance is termianted
+* The defualt EBS root device volumes of your defualt AMI's cannot be encrypted
+* The root device volumes is essentially the volume where the OS is installed
+* Additional volumes can be encrypted
+
+## EC2 Lab 3
+* Security Group edits on EC2 instnace take effect immediately
+* Allowing a protocol to provide Inbound communication will automatically allow the same protocol Outbound
+* Security Groups are stateful, whereas Network Access Control Lists are stateless
+* Security Groups do not allow blocking specific IP addresses or ranges, and do not allow blocking specific ports. This can be done with a Network Access Control List
+* All Inbound traffic is blocked by default, you will need to open ports 80 for HTTP, 22 for SSH, etc. if you want this
+* All Outbound traffic is allowed
+* Changes to security groups take effect immiediately
+* You can add multiple EC2 instances into a secuirty group
+* You can have multiple security groups attached to a single EC2 instance 
+* Security groups are **stateful**
+* If you create an inbound rule allowing traffic in, the corresponding outobund rule is automatically allowed
+* You cannot block IP addressed using Security Groups, instead use NACLs
+* You can set allow rules, but you cannot set deny rules. All non-allowed rules are denied
+
+## Elastic Block Store (EBS)
+* Essentially a virtual hard disk in the cloud
+* Provides persistent block storage volumes for use within EC2 instances
+* 5 different types:
+  * **General Purpose (SSD)**
+  * **Provisioned IOPS**
+  * **Throughput Optimised Hard Disk Drive**
+  * **Cold Hard Disk Drive**
+  * **Magnetic**
+
+## EBS Types
+| EBS Type | SSD/HDD | Volume Type | Description | Use Cases | API Name | Volume Size | Max IOPS/Volume 
+| -------- | ------- | ----------- | ----------- | --------- | -------- | ----------- |
+| **General Purpose SSD** |  |  |  |  |  |
+| **Provisioned IOPS SSD** |  |  |  |  |  |
+| **Throughput Optimized HDD** |  |  |  |  |  |
+| **Cold HDD** |  |  |  |  |  |
+| **EBS Magnetic** |  |  |  |  |  |
 
 
 # Glossary
@@ -559,6 +599,8 @@ Charged for:
 | SSE-C  |  | 
 | Elastic Block Store (EBS) |  | 
 | Redundany Store (RRS) |  |
+| Network Access Control List (NACL) |  |
+| Security Group (SG) |  |
 
 <!--
 |  |  | 
