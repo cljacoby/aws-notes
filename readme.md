@@ -569,7 +569,7 @@ Charged for:
 | EBS Volume Type | SSD/HDD | Description | Use Cases | API Name | Volume Size | Max IOPS/Volume |
 | -------- | ------- | ----------- | ----------- | --------- | -------- | ----------- | --------------- |
 <!--| **General Purpose SSD** | General purpose SSD volume that balances price and performance for a wide variety of workloads | Highest performance SSD volumes designed for mission-critical applications | Low cost HDD volume designed for frequently accessed, throughput-intensive workloads | Lower cost HDD volumes designed for less frequently accessed workloads | Previous generation HDD |  |  |-->
-| **General Purpose SSD** | SSD | Most workloads; general use |  |  |  |  |  |
+| **General Purpose SSD** | SSD | Most workloads; general use |  |  |  |  |
 | **Provisioned IOPS SSD** | SSD | Highest performance SSD; mission-critical applications |  |  |  |  |
 | **Throughput Optimized HDD** | HDD | Low cost HDD; frequently-accessed, high throughput workloads  |  |  |  |  |
 | **Cold HDD** | HDD | Lowest cost HDD; less frequently accessed, lower throughout workloads |  |  |  |  |
