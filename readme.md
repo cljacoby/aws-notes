@@ -568,11 +568,11 @@ Charged for:
 ## EBS Types
 | EBS Volume Type | SSD/HDD | Description | Use Cases | API Name | Volume Size | Max IOPS/Volume |
 | -------- | ------- | ----------- | ----------- | --------- | -------- | ----------- |
-| **General Purpose SSD** | SSD | Most workloads; general use |  |  |  |  |
-| **Provisioned IOPS SSD** | SSD | Highest performance SSD; mission-critical applications |  |  |  |  |
-| **Throughput Optimized HDD** | HDD | Low cost HDD; frequently-accessed, high throughput workloads  |  |  |  |  |
-| **Cold HDD** | HDD | Lowest cost HDD; less frequently accessed, lower throughout workloads |  |  |  |  |
-| **EBS Magnetic** | HDD | Previous generation HDD |  |  |  |  |
+| **General Purpose SSD** | SSD | Medium balance of performance of cost, good for Most workloads | General use | gp2 | 1 GiB - 16 TiB | 16,000 |
+| **Provisioned IOPS SSD** | SSD | Highest performance SSD; mission-critical applications | Databases | io1 | 4 GiB - 16 TiB | 64,000 |
+| **Throughput Optimized HDD** | HDD | Low cost HDD; frequently-accessed, high throughput workloads  | Big data and data warehouses | st1 | 500 GiB - 16 TiB | 500 |
+| **Cold HDD** | HDD | Lowest cost HDD; less frequently accessed, lower throughout workloads | File servers | sc1 | 500 GiB - 16 TIB | 250 |
+| **EBS Magnetic** | HDD | Previous generation HDD | Workloads where data is infrequentyl accessed | Standard | 1 GIB - TIB  | 40-200 |
 
 
 <!--| **General Purpose SSD** | General purpose SSD volume that balances price and performance for a wide variety of workloads | Highest performance SSD volumes designed for mission-critical applications | Low cost HDD volume designed for frequently accessed, throughput-intensive workloads | Lower cost HDD volumes designed for less frequently accessed workloads | Previous generation HDD |  |  |-->
