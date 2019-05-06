@@ -583,41 +583,6 @@ Charged for:
 * This is done to mitigate lag between EC2 compute actions and getting data from the volume
 * Terminating an EC2 will also automatically termiante the root EBS volume
 * You can encrypt additional volumes, but not the root volume
-* You can tell the root volume by the snapshot column being filled with the EC2 AMI identification string
-* Volumes can be modified, such as from gp2 to io1 or whatever, on the fly under `Actions -> Modify Volume` on the fly and don't need to shutdown isntane
-* On an EBS volume you can use `Actions -> Create Snapshot` to create a snapshot
-* With an EBS Snapshot, you can create an Image, which allows re-launching a new EC2 instance from the snapshotted EBS volume
-* This allows launching a new EC2 from a snaphot-to-image in a new availability zone
-* Using an Image from an EBS snapshot only allows launching under some EC2 instance types, not all
-* When you terminate an EC2, by default the root volume will also be termianted; however, additional attached volumes will persist
-
-## EBS Summary and Exam Tips
-* Volumes exist on EBS, and EBS can be thought of as a virtual hard drive
-* Snapshots exist on S3
-* Think of snapshots as a photograph of the disk
-* Snapshots are point-in-time copies of the Volume state
-* Snapshots are incremental, meaning only blocks that have been changed from last snapshot will be stored in S3 (only the delta is stored)
-* Creating the first snapshot will take longer, as effect of the incremental nature and having no previoous state to build off
-* When creating a snapshot, it is best practice to stop the isntance before taking the snapshot, especially for productoin workloads, although you can take a snapshot of a running instance
-* You can create AMIs from both Volumes and Snapshots
-* You can change EBS volume suze and storage type on the fly
-* Volumes will **Always** be in the same availability zone as the EC2 instance
-* To migrate an EC2 volume from one AZ to another, take a snapshot of the root volume, create an AMI from the snapshot, and then use the AMI to launch the EC2 in another AZ
-* To move an EC2 from on region to another, snapshot the root volume, create an AMI from the snapshot, then copy the AMI from one region to another, then use the copied AMI to launch an EC2 in another region
-
-## AMI Types: EBS vs Instance Store
-* You can select your AMI based on:
-  * Region
-  * Architecture (32-bit or 64-bit architecture)
-  * Launch Permissions
-  * Storage for the Root Device (a.k.a. Root Device Volume):
-    * Instance Store (**Ephemeral Storage**)
-    * EBS Backed Volumes
-* All AMIs are categorized as either backed by EBS or backed by instance store
-* **For EBS Volumes**:  The root device for an instance launched from the AMI is Amazon EBS volumes created from an  EBS snapshot 
-* **For Instane Store Volumes**: The root devive for an instance launched from the AMI is an isntance store volumes created from a template stored in S3
-
-
 
 
 # Glossary
@@ -646,9 +611,7 @@ Charged for:
 | Redundany Store (RRS) |  |
 | Network Access Control List (NACL) |  |
 | Security Group (SG) |  |
-| IOPS |  |
-| Amazon Machine Image (AMI) |  |
-| Snapshot |  |
+|  IOPS |  |
 
 <!--
 |  |  | 
