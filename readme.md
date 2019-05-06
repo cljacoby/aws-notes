@@ -61,6 +61,8 @@
 * Access Key ID and Secret Access Key are only visible once, so make sure to save
 * IAM allows defining password strength rules, and password rotation policy rules
 
+<!-- ==================================================================================================== -->
+
 # S3
 
 ## What is S3?
@@ -238,7 +240,7 @@ Charged for:
 * **Web Distribution**: Typically used for static websites
 * **RTMP**: Used for media streaming
 
-### Examp Tips
+### CloudFront CDN Examp Tips
 * An **Edge Location** is the location (server) where the content will be cached. Seperate from the AWS Region and AZ
 * An **Origin** is the origin of all the files the CDN will distribute. This can be an S3 Bucket, EC2 isntance, Elastic Load Balancer, or Route53
 * Considering TTL at design time, mainly in reference to rate of updates
@@ -439,6 +441,8 @@ Charged for:
   * https://aws.amazon.com/about-aws/whats-new/2018/07/amazon-s3-announces-increased-request-rate-performance/
   * https://docs.aws.amazon.com/AmazonS3/latest/dev/request-rate-perf-considerations.html
   * https://aws.amazon.com/s3/storage-classes/
+
+<!-- ==================================================================================================== -->
  
 # Elastic Cloud Compute (EC2)
 
@@ -616,9 +620,52 @@ Charged for:
 * All AMIs are categorized as either backed by EBS or backed by instance store
 * **For EBS Volumes**:  The root device for an instance launched from the AMI is Amazon EBS volumes created from an  EBS snapshot 
 * **For Instane Store Volumes**: The root devive for an instance launched from the AMI is an isntance store volumes created from a template stored in S3
+* For Instane Store Volumes, all volumes must be added to an EC2 at launch time, and they cannot be added on later. For EBS volumes this is not the case, and these can be added at launch or later on
+* Should there be issues with the hyper-visor, an Instance store volume cannot be recovered and is ephermeral
+
+## AMI Types: EBS vs Instance Store Volumes Review and Exam Tips
+* Instance Store Volumes are **Ephemeral** storage
+* Instance Store Voluems cannot be stopped
+* If the underlying host fails for Instance Store Volumes, you lose all your data
+* With EBS backed instances can be stopped, and you will not lose your data if the instance is stopped
+* You can reboot both, and will not lose your data by doing so
+* By default, both Root volumes will be deleted when the EC2 is terminated; however, with EBS volumes, you can tell AWS to keep the root device volume
+
+## Encryption with EBS and Root Volume Encryption
+* To encrypt the root volumes:
+  * Launch an EC2 instance with a normal, unencrypted root volume
+  * Create a snapshot of the EC2 isntance's root volume
+  * Copy the EBS snapshot, and select the encrypt option during the copy
+  * Create an AMI Image from the encrypted root volume copy
+  * Launch an EC2 instance from the encrypted root volume AMI
+* Once an EBS root volumes is encrypted during a copy, it cannot be unencypted 
+* Launching an EC2 from an AMI built from an encrypted root volume snapshot will limit the types of EC2s you can launch as
+
+## Encryption with EBS and Root Volumes Encrpytion Summary and Exam tips
+* Snapshots of encrpyted volumes are encrypted automatically, and cannot be unencrypted
+* Volumes restored from encrypted snapshots are encrpyted automatically
+* You can share snapshots, but only as unencrypted
+* These snapshots can be shared with other AWS accounts or made public on AWS community
+* Summary of steps to create encrypted root volume:
+  * Create a snapshot of the unencrypted root device volume
+  * Create a copy of the snapshot and select the encrypt option
+  * Create an AMI from the encrypted snapshot
+  * Use than AMI to launch the new encrypted instacne
+
+
+<!-- ==================================================================================================== -->
+
+## CloudWatch
+ 
 
 
 
+
+
+
+
+
+<!-- ==================================================================================================== -->
 
 # Glossary
 | Term | Definition |
