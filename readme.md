@@ -656,13 +656,90 @@ Charged for:
 <!-- ==================================================================================================== -->
 
 ## CloudWatch
- 
+* CLoudWatch is essentially a performance monitoring tool for all other AWS services
+* CloudWatch is capable of monitoring:
+  * **Compute**:
+    * EC2 instances
+    * Autoscaling groups
+    * Elastic Load Balancer
+    * Route53 health checks
+  * **Storage and Content Delivery**:
+    * EBS Volumes
+    * Storage Gateways
+    * CloudFront CDN
+
+### Host Level Metrics
+* CPU
+* Netowrk
+* Disk
+* Status Check:
+  * Underlying hyper-visor
+  * Underlying EC2 instance
+
+### CloudWatch vs CloudTrail
+* AWS CloudTrail increases visiblity into your user and resource activity by recording AWS Console actions and API calls.
+* CloudTrail enables you to identify:
+  * Which users and accounts called AWS
+  * The source IP address from which calls were made
+  * When the calls/actions occured
+* Essentially CloudTrail is an audit log whereas CloudWatch is a operational performance monitor
+
+### CloudWatch Summary and Exam Tips
+* CloudWatch is used for performance monitoring
+* CloudWatch can monitor most of the AWS services, and the applications these services support
+* CloudWatch with EC2 will monitor events every 5 minutes by default
+* You can have 1 minute intervals by turning on detialed monitoring
+* You can create CloudWatch alarms that trigger notifications
+* **CloudWatch is all about performance. CloudTrail is all about auditing**
+
+## CloudWatch Lab
+* Enabling CloudWatch detailed monitoring gives 1 minute monitoring interval, but is not eligible for free tier EC2
+* You can use CloudWatch create dashboards for custom monitoring setups  
+* You can create regional or global monitoring dashboards
+* You can use CloudWatch to create logs
+
+## CloudWatch Lab Summary and Exam Tips
+* Standard Monitoring is 5 miunute interval, detailed monitoring is 1 minute interval
+* CloudWatch enables creating dashboards to visualize system performance metrics
+* CloudWatch enables creating alarms that notify you when certain thresholds are reached (email)
+* CloudWatch enables you to create Events, which allow you to respond to state changes in AWS resources
+* CloudWatch enables you to setup and maintain logs
+* CloudWatch monitors performance, versus CloudTrail monitors API calls
+
+## AWS Command Line Tool 
+* Security Groups are region specific (I think)
+* You can use the AWS CLI to interact with AWS from anywhere in the world
+* You will need to set up access via IAM
+* Commands themselves are not in the exam, but some basic commands will be useful to know
+
+## Using IAM Roles with EC2
+* Roles are more secure than storing access key and secret access key credentials in an EC2 instance
+* Roles are also easier to manage
+* Roles can be assigned to any EC2 instance after it is created using either the console or the CLI
+* Roles are universal; you can use them from every region 
+
+## Bootstrap Scripts
+* Bootstrap scripts are a way to automate EC2 deployment
+* A boostrap script is a script that runs when an EC2 is first deployed
+* Comman actions:
+  * Run updates
+  * Install dependencies
+  * Initialize logging info
+* To add a bootstrap script, use  `Advanced Data -> User Data -> As Text`
+* Begin a bootstrap script with a shebang line, normally `#!/bin/bash`
+* Honestly this is a really ugly way to add a bash startup script
 
 
+## EC2 Instance Metadata
+* Meta-data for an instane can be accessed via `curl http://169.254.169.254/meta-data/`
+* The bootstrap script passed at launch time can be accessed via `curl http://169.254.169.254/user-data/`
 
-
-
-
+## Elastic File System (EFS)
+* Elastic File System (EFS) is the file storage system for EC2 instances
+* You cannot mount two EC2 instance two one EBS volume; however, you can have two EC2 instances sharing an EFS volume
+* Storage is elastic, and grows and shrinks as needed similair to compute power with EC2
+* You do not need to pre-provision storage maximum limit the way you do with EBS
+* A great method to share files between EC2 isntances
 
 
 <!-- ==================================================================================================== -->
@@ -696,7 +773,4 @@ Charged for:
 | IOPS |  |
 | Amazon Machine Image (AMI) |  |
 | Snapshot |  |
-
-<!--
-|  |  | 
--->
+| Elastic File System (EFS) |  | 
