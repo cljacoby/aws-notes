@@ -636,7 +636,7 @@ Charged for:
   * Launch an EC2 instance with a normal, unencrypted root volume
   * Create a snapshot of the EC2 isntance's root volume
   * Copy the EBS snapshot, and select the encrypt option during the copy
-  * Create an AMI Image from the encrypted root volume copy
+<F4><F4><F4>  * Create an AMI Image from the encrypted root volume copy
   * Launch an EC2 instance from the encrypted root volume AMI
 * Once an EBS root volumes is encrypted during a copy, it cannot be unencypted 
 * Launching an EC2 from an AMI built from an encrypted root volume snapshot will limit the types of EC2s you can launch as
@@ -741,6 +741,100 @@ Charged for:
 * You do not need to pre-provision storage maximum limit the way you do with EBS
 * A great method to share files between EC2 isntances
 
+## EFS Exam Tips
+* Supports the Netowrk File System version 4 (NFSv4) protocol
+* You only pay for the storage you use (no pre-provisioning required)
+* Can scale up to petabytes
+* Can support thousands of concurrent NFS connections
+* Data is stored across multiple AS's within a region
+* Read after write consistency
+
+## EC2 Placement Groups
+* Two Types:
+  * **Clustered Placement Groups**
+  * **Spread Placement Groups**
+* The two types are complete opposites
+* The name of a placement group must be unique withibn your AWS account
+* Only certain types of EC2 isntanes can be launched in a placement group, such as:
+  * Compute Optimized
+  * GPU
+  * Memory Optimized
+  * Storage Optimized
+
+### Clustered Placement Group
+* A **Clustered Placement Group** is a grouping of instances within a single AZ
+* Clustered placement groups are recommended for applications with low network latency, or high network throughput, or both
+* Basically the idea of having the phyiscal machines running the EC2s to be as close together as possible
+* Only certain instances can be launched in a Clustered Placement Group 
+* Clustered groups cannot span multiple AZs, as thats kind of exactly the opposite of their point
+
+### Spread Placement Group
+* A **Spread Placement Group** is a group of EC2 instanes placed on distinct underlyging hardware
+* Basically, the intentionally run on different machines
+* Spread Placement Groups are for appliations that have a small number of critical instances that should be kept seperate from each other
+* Maybe to facilitate a business risk consideration/mitigation in relation to failing machines
+* Spread placement groups can span mulitple AZs
+
+### EC2 Placement Groups Summary and Exam Tips
+* The name of a placement group must be unique withibn your AWS account
+* Only certain types of EC2 isntanes can be launched in a placement group, such as:
+  * Compute Optimized
+  * GPU
+  * Memory Optimized
+  * Storage Optimized
+* AWS recommends homogenous EC2 instance types within a placement group (doesnt elaborate why)
+* Clustered Placement Group can't span multiple AZs, while Spread Placement Group can
+* You can't merge placement groups
+* You can't move a running EC2 instance into a placement group; hwoever, you can generate an AMI from an isntance an launch that in a placement group
+
+## EC2 Summary and Exam Tips
+* Elastic Cloud Compute (EC2) is a web service that provides resizable compute capaity in the cloud
+* EC2 reduces the time to obtain and boot a server instance, allowing you to have a host in miniutes 
+* Allows you to easily scale up and scale down your compute power as your requirements change
+* The four types of EC2 pricing:
+  * **On Demand**: Allows you to pay a fixed rate by the hour (or by second) with no commitment 
+  * **Reserved**: Provides you with a capacity reservastion (either 1 or 3 years) and offers a significant discount in hourly rate compared to On-Demand
+  * **Spot**: Enables you to set a bid price on compute power which is supplied when a surplus in compute resources causes the spot price to dip. You get and relinquish compute power as the priced dips below your threshold.
+  * **Dedicated Hosts**: Physical EC2 servers dedicated for your use, normally to facilitate license-bound software agreements or cannot use multi-tennant virtualization
+* If a Spot instance is terminated by AWS you will not be charged for the partial hour of use; however, if you termiante the Spot instance, you will be charged for the partial hour of use 
+* **TODO:** Write down the EC2 types pneomonic
+* Says that you do not need to memorize EC2 instance types for Assocaite level Solutions Architect (but will for professional)
+* Termination protection is turned **off** by default, and must be turned on to use
+* On an EBS-backed instance, the default action for the root EBS volumes is to be deleted when the instance is terminated
+* Any additional EBS volumes mounted to an EC2 will persist after termination of the EC2
+* EBS root volumes of your **DEFAULLT AMI**s cannot be encrypted.
+* To encrypt the root volume, You can use a third party tool like bitlocker, or you can create an AMI with an encrypted root volume
+* Additional EBS volumes can be encrypted from start (don't need to create an AMI)
+* All Inbound traffic is blocked by default
+* All Outbound traffic is allowed by default
+* Changes to Security Groups take effect immediately
+* You can have any number of EC2 isntances assinged to a Security Group
+* You can assign any number of Security Groups to an EC2
+* Security groups are **STATEFUL**, meaning when you open up a port, it will be opened for inbound and outbound traffic
+* **NACL**s are **STATELESS** and you must manually specifiy a port is open for inbound and outbound traffic
+* If you create an inbound traffic rule allowing inbound traffic, the corresponding outbound traffic is automatically allowed back out
+* You cannot block certain IP Addresses with a Security Group, isntead you would use a Network Access Control List
+* You can specify allow rules with Security Groups, but not deny rules
+* Know the types of EBS volumes, described in the table in the main EBS section
+* Voluems exist on EBS, and EBS can be thought of as a virtual hard disk drive in the cloud
+* Snapshots exist on S3, and snapshots can be thought of as an image of a hard disk drive at a state in time
+* Sanpshots are point in time copies of a volume
+* Snapshots are incremental, and only store changes since the last snapshot
+* The first snapshot can take longer to generate as it has not previous state to build incremental changes off
+* To create a snapshot of a root EBS volumes, it is recommended to stop the EC2 instance before taking the snapshot (but you can do on running)
+* You can create AMIs from both volumes and snapshots
+* You can change EBS volume sizes on the fly, including changing the storage size and storage type
+* Volumes will always be in the same availability zone as the EC2 instance
+* To move an EC2 volumes from one **AZ** to another:
+  * Take a snapshot of it
+  * Create an AMI from the snapshot
+  * Use the AMI to launch the EC2 instance in a new AZ
+* To move an EC2 from one **region** to another:
+  * Take a snapshot ofit
+  * Create an AMI from the snapshot
+  * Copy the AMI from region to another
+  * Laucnh an EC2 from the copied AMI
+*  
 
 <!-- ==================================================================================================== -->
 
@@ -773,4 +867,5 @@ Charged for:
 | IOPS |  |
 | Amazon Machine Image (AMI) |  |
 | Snapshot |  |
-| Elastic File System (EFS) |  | 
+| Elastic File System (EFS) |  |
+| Clustered Placement Group |  | 

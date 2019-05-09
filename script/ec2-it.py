@@ -10,8 +10,7 @@ priv_key_path = "/path/to/private/key.pem"
 public_ip = "my-ec2-user-name"
 ec2_user = "pub.ip.add.ress"
 
-# use either parse_known_args, or sys.argv[1:] to handle first arg being python script itself
-def get_args(argv=sys.argv):
+def get_args(argv=sys.argv[1:]):
     parser = argparse.ArgumentParser()
     parser.add_argument("-u",
                         "--user",
@@ -25,7 +24,7 @@ def get_args(argv=sys.argv):
                         "--identity",
                         default = priv_key_path,
                         help = "The .pem secrey key to use as identity file when SSHing")
-    args = parser.parse_known_args(argv)
+    args = parser.parse_args(argv)
     return args
 
 def main():
