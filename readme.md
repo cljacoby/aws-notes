@@ -788,6 +788,8 @@ Charged for:
 * You can't move a running EC2 instance into a placement group; hwoever, you can generate an AMI from an isntance an launch that in a placement group
 
 ## EC2 Summary and Exam Tips
+
+### EC2 Overview
 * Elastic Cloud Compute (EC2) is a web service that provides resizable compute capaity in the cloud
 * EC2 reduces the time to obtain and boot a server instance, allowing you to have a host in miniutes 
 * Allows you to easily scale up and scale down your compute power as your requirements change
@@ -800,11 +802,15 @@ Charged for:
 * **TODO:** Write down the EC2 types pneomonic
 * Says that you do not need to memorize EC2 instance types for Assocaite level Solutions Architect (but will for professional)
 * Termination protection is turned **off** by default, and must be turned on to use
+
+### EC2 Storage: EBS Volumes
 * On an EBS-backed instance, the default action for the root EBS volumes is to be deleted when the instance is terminated
 * Any additional EBS volumes mounted to an EC2 will persist after termination of the EC2
 * EBS root volumes of your **DEFAULLT AMI**s cannot be encrypted.
 * To encrypt the root volume, You can use a third party tool like bitlocker, or you can create an AMI with an encrypted root volume
 * Additional EBS volumes can be encrypted from start (don't need to create an AMI)
+
+### EC2 Security
 * All Inbound traffic is blocked by default
 * All Outbound traffic is allowed by default
 * Changes to Security Groups take effect immediately
@@ -816,6 +822,8 @@ Charged for:
 * You cannot block certain IP Addresses with a Security Group, isntead you would use a Network Access Control List
 * You can specify allow rules with Security Groups, but not deny rules
 * Know the types of EBS volumes, described in the table in the main EBS section
+
+### EC2 Snapshots and AMIs
 * Voluems exist on EBS, and EBS can be thought of as a virtual hard disk drive in the cloud
 * Snapshots exist on S3, and snapshots can be thought of as an image of a hard disk drive at a state in time
 * Sanpshots are point in time copies of a volume
@@ -824,7 +832,8 @@ Charged for:
 * To create a snapshot of a root EBS volumes, it is recommended to stop the EC2 instance before taking the snapshot (but you can do on running)
 * You can create AMIs from both volumes and snapshots
 * You can change EBS volume sizes on the fly, including changing the storage size and storage type
-* Volumes will always be in the same availability zone as the EC2 instance
+* Volumes will **always** be in the same availability zone as the EC2 instance
+* A.k.a. you cannot have an EC2 instance and an EBS volume in different AZs
 * To move an EC2 volumes from one **AZ** to another:
   * Take a snapshot of it
   * Create an AMI from the snapshot
@@ -834,7 +843,74 @@ Charged for:
   * Create an AMI from the snapshot
   * Copy the AMI from region to another
   * Laucnh an EC2 from the copied AMI
-*  
+
+### EBS Encryption
+* Snapshots of encrypted volumes are encrypted automatically
+* Snapshots of encrypted volumes cannot be unencrypted, and will always stay encrypted
+* Volumes restored from encrypted snapshots are encrypted automatically
+* You can share snapshots with other accounts or make them public, but only if they are unecrypted
+* The root volume cannot be launched as encrypted the way additional valumes can
+* However, an EC2 with an encrypyted root volume can be achieved by:
+  * Launch an EC2 with an unencrypted root volume (just a normal EC2)
+  * Create a snapthos of the unencrypted root volume
+  * Create a copy of the snapshot and select encryption option during copy
+  * Create an AMI from the snapshot
+  * Launch the AMI with the encrypted root volumes
+* Alternatively you can use a third party tool like bitlocker to en encrypt the root volume
+
+### CloudWatch
+* CloudWatch is used to monitor performance
+* Can monitor performance of EC2, but also performance of most AWS services
+* CloudWatch will monitor EC2 events every 5 minutes by default
+* Can turn on detailed monitoring to get 1 minute interval monitoring (but this isnt free)
+* You can create CloudWatch Alarms which trigger notifications
+* **CloudWatch** -> **Performance**; **CloudTrail** -> **Auditing**
+* **CloudWatch Dashboard**: Customize your view of  performance metrics
+* **CloudWatch Alarms**: Allows you to set Alarms that notify you when a threshold is reached
+* **CloudWatch Events**: Help you respond to state changes on your AWS resources
+* **CloudWatch Logs**: Create logs of your running instances to review/debug
+
+### AWS CLI
+* You can interact with AWS from anywhere in the world with the CLI
+* You will need to set up access in IAM for the CLI
+
+### EC2 Roles
+* Key infromation can be stored in the `~/.aws` directory; however, this is a bad way to do identity authentication
+* Instead create a role
+* Roles are easier to manage
+* Roles can be assigned to an EC2 after launch
+* Roles are universal, and can be used in any region in the world
+* Roles can be applies using either the console or the CLI
+
+### Bootstrap Scripts and Instace User and Meta Data
+* Bootstrap scripts run when an EC2 first boots (a.k.a. launch)
+* Normally used to automate updating and installing software
+* Meta-data provides information about an EC2 isntance such as the public IP
+* Meta-data can be accessed using this curl command in any EC2 instance:
+  * `curl http://169.254.269.254/lastest/meta-data/`
+* User data is literally the bootstrap script
+* User data can be accessed via the following curl command in any EC2 isntance:
+  * `curl http://169.254.269.254/lastest/user-data/`
+
+### EFS
+* Supports Netowrk File System version 4 (NFSv4) protocol
+* You only pay for the storage you use; no pre-provisioning required
+* Can scale up to petabytes
+* Can support thousand of concurrent NFS connections
+* Data is stored across multiple AZ's within a region
+* Read after write consistency
+* You cannot share EBS with multiple instances, but you can create an EFS mount which multiple EC2 can connect to
+
+###` 
+
+### EBS vs Instance Store
+* Instance store volumes are sometimes called **Ephemeral** storage
+* Instance store volumes cannot be stopped, and if the underlying instance or hypervisor fails you will lose your data
+* EBS backed instances can be stopped, and you will not lose data if the isntance is stopped
+* You can reboot either the EBS isntane or EC2 isntnace and not lose your data
+* By defualt, both an Instance Store and EBS root volumes will be deleted upon EC2 termination; however, with EBS you can tell AWS to keep the root volume
+* 
+
 
 <!-- ==================================================================================================== -->
 
