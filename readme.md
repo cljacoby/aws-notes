@@ -844,6 +844,13 @@ Charged for:
   * Copy the AMI from region to another
   * Laucnh an EC2 from the copied AMI
 
+### EBS vs Instance Store
+* Instance store volumes are sometimes called **Ephemeral** storage
+* Instance store volumes cannot be stopped, and if the underlying instance or hypervisor fails you will lose your data
+* EBS backed instances can be stopped, and you will not lose data if the isntance is stopped
+* You can reboot either the EBS isntane or EC2 isntnace and not lose your data
+* By defualt, both an Instance Store and EBS root volumes will be deleted upon EC2 termination; however, with EBS you can tell AWS to keep the root volume
+
 ### EBS Encryption
 * Snapshots of encrypted volumes are encrypted automatically
 * Snapshots of encrypted volumes cannot be unencrypted, and will always stay encrypted
@@ -901,16 +908,20 @@ Charged for:
 * Read after write consistency
 * You cannot share EBS with multiple instances, but you can create an EFS mount which multiple EC2 can connect to
 
-###` 
-
-### EBS vs Instance Store
-* Instance store volumes are sometimes called **Ephemeral** storage
-* Instance store volumes cannot be stopped, and if the underlying instance or hypervisor fails you will lose your data
-* EBS backed instances can be stopped, and you will not lose data if the isntance is stopped
-* You can reboot either the EBS isntane or EC2 isntnace and not lose your data
-* By defualt, both an Instance Store and EBS root volumes will be deleted upon EC2 termination; however, with EBS you can tell AWS to keep the root volume
-* 
-
+### EC2 Placement Groups
+* Two types:
+  * **Clustered Placement Groups**: Used for very high network throughput, low latency, or both. EC2's are ran on machines physically located very close (or the same machine altogether)
+  * **Spread Placement Group**: Used for critical EC2 instances that need to be on seperate machines for risk mitigation
+* Clustered placement groups cannot span multiple AZs, whereas spread placement groups can
+* The name you specify for a placement group must be unique in your AWS account
+* Only certain types of EC2 instances can be launched in a placmeent group:
+  * Compute Optimized
+  * GPU
+  * Memory Optimized
+  * Storage Optimized
+* AWS highly recommends using homogengous instance types within a placement group, although you can not if you want
+* You cannot merge placement groups
+* You cannot move an exisitng EC2 instance into a placement group; however, you can create an AMI and launch a new instance from the AMI in the placement group
 
 <!-- ==================================================================================================== -->
 
