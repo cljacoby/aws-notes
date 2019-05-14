@@ -925,6 +925,80 @@ Charged for:
 
 <!-- ==================================================================================================== -->
 
+# Databases on AWS
+
+## RDS Backups
+* Two Types:
+  * **Automated Backups**
+  * **Database Snapshots**
+* When you restore an RDS from a backup (either type), the restored version will be a new RDS instance with a new DNS endpoint
+
+### Automated Backups
+* Automated backups allow you to recover your database to any point in time within a **retention period**
+* Retention period can be between 1 - 35 days
+* Automated backups take a full daily snapshot and also store transaction logs throughout the day
+* WHen you do a recovery, AWS starts with the most recent daily backup, and applies transactions from the log up until the relevant time
+* This allows recovery down to a second-in-time accuracy
+* Enabled by defualt
+* Backup data stored in S3
+* Your amount of free storage is equal to the size of your database
+* Backups are taken within a refined window, during which I/0 may be suspended while data is being backed up. This can induce latency
+* If RDS database instance is deleted, the automated backup data is also deleted
+
+### Database Snapshots
+* Snapshots are taken manually; user initiated
+* The snapshot is retained even after the original RDS is deleted
+
+### Encryption at Rest
+* Encryption supported for:
+  * PostgreSQL
+  * MariaDB
+  * Aurora
+  * Oracle
+  * SQL Server
+  * MySQL
+* Encryption is done via Amazon KMS
+* Once encryption is on, all automated backups, read replicas, and snapshots are also encrypted
+
+### Multi-AZ Database
+* Allows you to have another copy of your production DB in another AZ in case of failure of an AZ
+* AWS handles the replication for you, and all write will automatically be synchronized to the backup
+* In the event of planned maitenance, DB instance failure, or AZ failure, Amazon RDS will automatically fail over to the standby copy so that DB operations can resume as normal
+* Multi-AZ is designed for fail over prevention, not for performance optimization, which would use read replicas instead
+* Multi-AZ databases are available for:
+  * SQL Server
+  * Oracel
+  * MySQL Server
+  * PostgreSQL
+  * MariaDB
+
+### Read Replicas
+* All EC2s write to a single primary RDS databse, and the writes are syncornized to replica databases
+* The EC2s then read from multiple database copy to distribute the worload out and improve performance
+* Read replicas will boost performance with read heavy workloads
+* Propogation of the primary RDS write to the read replica instance is Asnychronous
+* In general the two ways to improve DB performance are:
+  * **Read Replices**
+  * **ElastiCache**
+* Read replicas are available for the following databases:
+  * MySQL Server
+  * PostgreSQL
+  * MariaDB
+  * Aurora
+* Read replicas are used for scaling performance, not for disaster recovery
+* Must have automatic backups turned on in order to deploy read replicas
+* You can have 5 read replicas of any database
+* You can have read replias of read replicas, but increased chaining can induce latency
+* Each read replica will have its own DNS endpoint
+* You can have read replicas that have Multi-AZ
+* You can create read replicas of Multi-AZ source databases
+* Read replicas can be promoted to their own databases. This breaks the replication
+* You can have a read replica in a secon region
+
+
+
+<!-- ==================================================================================================== -->
+
 # Glossary
 | Term | Definition |
 | ---- | ---------- |
@@ -956,3 +1030,5 @@ Charged for:
 | Snapshot |  |
 | Elastic File System (EFS) |  |
 | Clustered Placement Group |  | 
+|  Diaster Recovery (DR) |  |
+| Multi-AZ |  |
