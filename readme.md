@@ -927,6 +927,54 @@ Charged for:
 
 # Databases on AWS
 
+## Relational Databases
+* Relational Database Service (RDS) is the Relational Database service on AWS
+* 6 Database flavors on of RDS:
+  * **Microsoft SQL Server**
+  * **Oracle**
+  * **MySQL**
+  * **PostgeSQL**
+  * **Amazon Aurora**
+  * **MariaDB**
+* RDS has two key features:
+  * **Multi-AZ** - For disaster Recovery
+  * **Read Replicas** - For performance
+
+### Multi-AZ Overview
+* With Multi-AZ, there are multiple stored copies of the database on AWS
+* There is a single public URL for an EC2 that is pointed to the primary database instance
+* If the primary database goes down, the public EC2 is automatically switched over to the secodary database instance
+* The change is orchestrated by AWS, with no user interaction
+* Useful if you have a critical database that you want fail over prevention for
+
+### Read Replicas Overview
+* There is a database instance, with a public EC2 URL that directs to the database instance
+* When writes are made to the database, the writes are made to the primary database isntance, and also propogated to a seconrary database instance
+* The secondary database instance is always a perfect replica of the primary database
+* The read replica solution is useful when you have a large request volume increase, and you need to scale up performance:
+* For read opearations, users can be split to read between different read replices of the primary database instance, therefore splitting the overall load
+* Can have up to **five** copies for read replices
+
+## Non-Relational Databases
+* Consist of Collections, Documents, Key-Value Pairs which can be construed as analogs to Tables, Rows, and Fields in an RDB
+* Very similar to JSON structure organization
+* Non-Relational databases do not need a rigid schema the way RDBs do
+* Amazon's solution for NoSQL databases is **DynamoDB**
+
+### Case Analysis: OTLP vs OLAP
+* **OTLP**: Online Transaction Processing
+* **OLAP**: Online Analytics Processing
+* OTLP Example:
+  * Query on online transaction
+  * Order Number: 2120121
+  * Pulls up a row of data such as Name, Date, Deliery Address, and Delivery Status
+* OLAP Example:
+  * Net profit for EMEA and Pacific for the Digital Radio Product
+  * Pulls in a large number of recrods
+  * Sum all radios sold in EMEA, sum all radios sold in pacific, calculate unit cost ratio of each region, calculate net profit
+* Data Warehousing databases use different type of architecture both from a database perspective and an infrastructural perspective
+* Amazon's solution to data warehousing is called **Redshift**
+
 ## RDS Backups
 * Two Types:
   * **Automated Backups**
@@ -994,6 +1042,75 @@ Charged for:
 * You can create read replicas of Multi-AZ source databases
 * Read replicas can be promoted to their own databases. This breaks the replication
 * You can have a read replica in a secon region
+
+## DynamoDB
+* Amazon's NoSQL database solution
+* Fast/performant, and offsers single-digit millisecond latency at any scale
+* Supports document and key-value data models
+* Performance makes it suiable for:
+  * Mobile
+  * Web
+  * Gaming
+  * Ad-tech
+  * IoT
+  * More
+* Many mobile developers use DyanomoDB
+* Basics of DyanamoDB are:
+  * Stored on SSD storage (part of the performance is this)
+  * SPread across 3 geographically distinct data centers
+  * Two types of read models:
+    * **Eventual Consistency Reads (Default)** 
+    * **Strongly consistent Reads**
+  * Choosing between read models is done with the rule of thumb **1 Second Rule**
+  * **1 Second Rule**: If your application needs to write, and read the updates within 1 second or less, you will need Strongly Consistent Reads. Otherwise Eventual Consistency Reads will suffice. 
+
+### Eventual Consistency Reads
+* Consitency of writesacross all copies of data is usually reached within a second
+* Repeating a read after a short time should return the updated data
+* This model offers the best read perfomrance
+* Default behaviour
+
+### Strongly Consistent Reads
+* IF you're application needs to write data, and read with the gaurentee of the update being reflected, you should use Strongly Consistent Reads
+* Strongly Consistent Reads will return all updates for reads for writes that have returned a succesful response
+
+### DyanoDB Summary and Exam Tips
+* DynamoDB is stored on SSD
+* Spread across 3 geographically distinct data centers
+* Most applications can use the Eventual Consisteny Reads, which is the default read model
+* If reads need to be accurate to the most recent writes within 1 second or less, you will need the Strongly Consistent Reads read model
+
+
+## Redshift
+* Redshift is a way of doing business intelligence or data warehousing in the cloud
+* Petabyte-scale capacity
+* Can start small at $0.25/hour with no commitments or uprfront costs
+* Can scale up to petabytes at a cost of $1000/year/terabyte
+* Datawarehousing use different architecure compared to database or infrastructure layer
+
+## Redshift Configurationl
+* You can have a single node or a multi-node
+* A single node is 160GB in size
+* A multi-node has one leader node, which manages client connections and recieves queries
+* A multi-node then has many compute nodes, which store data and perform queries
+* Can have up to 128 compute nodes behind a leader node
+* Redshift uses **Advanced Compression**
+
+### Redshift Advanced Compression
+* Columnar data can be compressed much more than row-based data
+* Because columns are consistent in their types, data is easier to compress because all data is the same
+* Compression is better compared to normal RDS
+* Redshift will use less space on disk compared to an RDS
+
+### Redshift Massively Parellel Processing (MPP):
+* Redshift automatically distriburtes data and query load across all nodes
+* Redshift makes it easy to add additional nodes to your data warehous
+* Enables easy scaling yo growth, as simply adding more nodes is a viable scaling technique
+
+### Redshift Backups
+* Enabled by default with a 1 day retention
+* 
+
 
 
 
