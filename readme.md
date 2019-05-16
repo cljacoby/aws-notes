@@ -1192,7 +1192,7 @@ Charged for:
   * **Memcached**
   * **Redis**
 
-### Comparison of Memcached and Redis
+### Comparison of ElastiCache Models: Memcached and Redis
 
 | Requirement | Memcached | Redis |
 | ----------- | --------- | ----- |
@@ -1205,6 +1205,103 @@ Charged for:
 | Persistance | No | Yes |
 | Multi-AZ | No | Yes |
 | Backup and Restore capabilities | No | Yes |
+
+* Memcached is in general a simple memory cache to setup and get basic features easy
+* Redis should be used when your use case demands more complex features like complex data types, backups and restores, etc.
+
+### ElastiCache
+* Use ElastiCache to increase database and web appliation performance
+* Use ElastiCache to decrease load on overloaded DBs
+* The two steps to ease load on overloaded DBs are:
+  * Add read replicas
+  * Add ElastiCache
+* Reddis is Multi-AZ; memcached is not
+* Can do backups and restores with Reddis; memcached can not
+
+## Databases Summary and Exam Tips
+* RDS is the relational database service on AWS
+* RDS associated with Online Transaction Processing (OLTP)
+* RDS (OLTP) types:
+  * SQL
+  * MySQL
+  * PostgreSQL
+  * Oracle
+  * Aurora
+  * MariaDB
+* DyanmoDB is Amazon's NoSQL database
+* RedShift is Amazon's Online Analytics Processing (OLAP), Online Business Intelligence, and data warehousing
+* ElastiCache is Amazon's memory caching service, with two types: Memcached and Redis
+* Memcached is easier to setup and will give memory caching, but Redis will provide advanced features like backups/restores, complex data types, and Multi-AZ
+* RDS runs on virtual machines, and you **cannot** SSH into these operating system
+* Patching of the RDS operating system and DB is Amazon's resposibility
+* RDS is not serverless, with exception begin Aurora Serverless
+* DynamoDB is serverless
+* RDS has two types of backups:
+  * Automated backups
+  * Database snapshots
+* **Read Replicas**:
+  * Used to increase performance and deload overloaded DBs (along with ElastiCache)
+  * Not used for disaster recovery
+  * Can be Multi-AZ
+  * Must have backups turned on
+  * Can be in different regions
+  * Can be in Aurora or MySQL
+  * Can be promoted to a master DB instance, but this breaks replication from the original master DB instacne
+* **Multi-AZ**:
+  * Used for disaster recovery
+  * **Not** used for performance increases
+  * You can force a failover from one RDS instance to another by rebooting the instance
+* Encryption at rest is supported for:
+  * **MySQL**
+  * **Oracle**
+  * **SQL Server**
+  * **PostgreSQL**
+  * **MariaDB**
+  * **Aurora**
+* Encryption is done using the AWS KMS service
+* Once your date is encrypted, the data stored at rest in the underlying storage is encrypted, and all automated backups, read replicas, and snapshots will also be encrypted
+* **DynamoDB**:
+  * Stored on SSD storage
+  * Spread across 3 geographicall distinct data centers
+  * Two consistency models:
+    * Eventual Consistent Reads (Default)
+    * Strongly Consistent Reads
+  * Use Eventual Consistent Reads for all use cases that dont need writes reflected in less than 1 second
+* **Redshift**:
+  * Redshift is used for business intelligence
+  * Currently limited to 1 AZ only
+  * Automated backups are endabled by default and have 1 day retention period
+  * Maximum retention period of 35 days
+  * Redshift will always attempt to maintain 3 copies of your data:
+  * The original one on the compute node
+  * The replica one on the compute node
+  * A backup in Amazon S3
+  * Redshift can asyncrhonosuly replicate your snapshots to S3 in another region
+* **Aurora**:
+  * Alwqays have 2 copies of your data in each AZ, with minimum of 3 AZs
+  * Minimum of 6 copies of your data
+  * You can share your Aurora DB with other AWS accounts as a snapshot
+  * 2 types of replicas:
+    * Aurora replica
+    * MySQL replica
+  * Can only do automated fail over with Aurora replicas, and manual failover with MySQL replic
+  * Aurora has automated backups turned on by default
+  * You can also take snapshots with Aurora, and share these snapshots
+* **ElastiCache**:
+  * Along with read replica, ElastiCache is used to increase web application performance by caching
+  * If you need Multi-AZ, you need to use Redis
+  * If you need backups and restores, you need to use Redis
+  * If you need complex data types, you need Redis
+  * If you need to scale horizonally, you need Memcached
+  * If you just need memory caching and prefer simplicity, you should use Memcached
+
+
+
+
+
+
+
+
 
 
 <!-- ==================================================================================================== -->
@@ -1244,3 +1341,6 @@ Charged for:
 | Multi-AZ |  |
 | Hardware Service Manager (HSM) |  |
 | Key Management Service (KSM) |  |
+| Online Transaction Processing | OLTP |
+| Online Analytics Processing (OLAP)  |  |
+| DyanamoDB |  |
