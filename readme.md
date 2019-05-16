@@ -1109,10 +1109,85 @@ Charged for:
 
 ### Redshift Backups
 * Enabled by default with a 1 day retention
+* Maximum retention period of 35 days
+* Redshift always attempts to maintain at leasy 3 copies of your data:
+  * The original
+  * The replica on the compute nodes
+  * A backup on S3
+* Redshift can asynchronsouly replicate your snapshots to S3 in another region for disaster recovery
+  
+### Redshift Pricing
+* Priced by **Compute Node Hours**, which is the total number of hours of process timing across all your compute nodes during a billing period
+* You are billed for 1 unit per node per hour
+* A 3-node data warehouse cluster running persisently for a month would incur **2160** hours, which is 24hrs/day * 30 days/month * 3 nodes
+* You are not charged for leader node hours, only compute node hours
+
+### Redshift Security
+* Encrypted in transit using SSL
+* Encrypted at rest using AES-256 encryption
+* By default, Redshift manages the keys internally
+* You can manage your own keys via:
+  * HSM (Hardware Service Manager)
+  * KSM (Key Management Service)
+
+### Redshift Availability
+* Currently only available in 1 As; no multi-AZ option
+* Can restore snapshots to another AZ in the event of an outage
+
+
+### Redshift Summary and Exam Tips
+* Redshift is used for business intelligence
+* Availability is only 1 AZ
+* Backups enabled by default for 1 day retention period
+* Maximum retention period of 35 days
+* Redshift will always attempt to maintain at least 3 copies of your data:
+  * The original
+  * The replica on the compute node
+  * A backup in S3
+* Redshift can asynchounously replicated your snapshots in S3 to another region for disaster recovery
+
+## Aurora
+* Aurora is a MySQL/PostgreSQL compatible database engine on the AWS cloud
+* Combines speed/performance of commercial database engines with cheapness of open-source databases
+* 5x better performance compared to MySQL and 10% the cost of a commercial database
+* Propietary Amazon DB engine
+* You start with a 10GB database, and can scale incrementally 10GB at a time up to maximum 64TB
+* Storage autoscales
+* Compute resources can scale up to 32vCPUs and 244GB of memory
+* 2 copies of your data is contained in each Availability Zone, with minimum of 3 availability zone
+* This creates 6 total copies of your data of 3 AZs
+* Designed to handle loss of up to two copies of your data without affecting DB write availability, and up to 3 opies withou affecting read availiablity
+* The handling is automatic on AWS, and will be transparent to users and developers
+* Aurora storage is self-healing and data blocks and disks are routinely scanned for errors and repaired automatically
+
+### Aurora Read Replices
+* Aurora Read Replices (15 available)
+* Also can have MySQL read replicas (5 available)
+* You can have AWS automatically fail over from one Aurora DB to another, but cannot automatically fail over to a MySQL relica
+* Failing over to a MySQL DB will be manual and handled by the developers
+* Automated backups are always enables on Aurora DB isntances
+* Backups do not inhibit performance
+* You can also take snapshots of Aurora DBs, which also does not inhibit performance
+* You can share Aurora DB snapshots with other AWS accounts
+* Promoting a read replica of a MySQL backup of an Aurora database creates a new Aurora database that is primary, no longer a read replica
+
+### Aurora Summary and Exam Tips
+* Aurora is a MySQL/PostgreSQL compatible RDS database engine on the AWS cloud
+* Aurora is a propietary technology created by amazon
+* 2 copies of your data is contained in each AZ, with minimum of 3 AZs, to create 6 total copies
+* 2 types of replicas:
+  * Aurora replicas
+  * MySQL replices
+* Automated fail over is only available with Aurora replicas, manual fail over can be used with MySQL replicas
+* You can migrate MySQL replicas to Aurora DB by promoting the replica, or by creating a snapshot and launching an Aurora DB from the snapshot
+* Aurora has automated backups turned on by default, with default 1 day retention period
+* You can share Aurora snapshots with other AWS accounts
+
+
+## ElastiCache
+* ElastiCache is a web service that makes it easy to deploy, operate, and scale in-memory caching in the cloud
+* ElastiCache improves the performance of web applications by retrieving resources from in memory caches rather than disk-based reads
 * 
-
-
-
 
 <!-- ==================================================================================================== -->
 
@@ -1149,3 +1224,5 @@ Charged for:
 | Clustered Placement Group |  | 
 |  Diaster Recovery (DR) |  |
 | Multi-AZ |  |
+| Hardware Service Manager (HSM) |  |
+| Key Management Service (KSM) |  |
