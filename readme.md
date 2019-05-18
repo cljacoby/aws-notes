@@ -939,6 +939,7 @@ Charged for:
 * RDS has two key features:
   * **Multi-AZ** - For disaster Recovery
   * **Read Replicas** - For performance
+* MySQL installations default to using port 3306
 
 ### Multi-AZ Overview
 * With Multi-AZ, there are multiple stored copies of the database on AWS
@@ -1019,6 +1020,23 @@ Charged for:
   * MySQL Server
   * PostgreSQL
   * MariaDB
+
+### RDS Backups, Multi-AZ, and Read Replicas Lab
+* Can migrate MySQL database to Aurora by
+  * Creatng an Aurora read replica from MySQL DB
+  * Promoting to primary database
+* When adding Multi-AZ configuration to a previously single AZ DB, it can significantly decrease database performance, especially for write intensive workloads
+* You can add Multi-AZ to a previously single AZ DB during a schedule maitenance window
+* The status when Multi-AZ is applied will change from `Available` to `Modifying`
+* You can force an AZ change by rebooting DB instance with failover option selected
+* Backups need to be turned on in order to enable read replicas
+* Maximum retention period for backups is 35 days
+* Turning backups on when they were off can cause downtime and slow performance. Status will change to `Modifying`
+* Read replicas can be in a different region than primary instance
+* Read replicas can be set to publicly accessible
+* Read replicas can be set to encrypted
+* Read replicas can be set to Multi-AZ deployment
+* Read replicas require a DB instane identifier, which is basically just a name
 
 ### Read Replicas
 * All EC2s write to a single primary RDS databse, and the writes are syncornized to replica databases
@@ -1294,6 +1312,280 @@ Charged for:
   * If you need complex data types, you need Redis
   * If you need to scale horizonally, you need Memcached
   * If you just need memory caching and prefer simplicity, you should use Memcached
+
+<!-- ==================================================================================================== -->
+
+# DNS 101
+* Amazon's DNS service is called Route 53
+* The name Route 53 comes from the port Route 53 is on, which is port 53
+
+## What is DNS
+* DNS can be analagously thought of as a phone book
+* DNS is used to convert human friendly domain names into compute IPv4 and IPv6 IP address
+* IP addresses are used to identify individual machines on a Network
+* The IPv4 space is a 32 bit field and has over 4 billion different possible adresses (4,294,967,296)
+* The IPv6 has an address space of 128bits which in theory is 340 undecillion addresses (340,282,366,920,938,463,374,607,431,768,211,456)
+* The **Top Level** domain is the last string section after the last period in a URL.
+* For example with `http://www.google.com` the top level domaion is `.com`
+* There is **Second Level Domain** which is an optional string just before the top level domain
+* An example of a URL with a second level domain would be URLs ending in `.co.uk`
+* The top level domain names are controlled by the Internet Assigned Numbers Authority (IANA) in a root zone database
+* This database is essentially a database of all available top level domains
+* This database is viewable at `http://www.iana.org/domains/root/db`
+* Because all the names in a domain must be unqiue, there needs to be a way to organize this so domain names aren't duplicated
+* This is performed by domain registrars
+* A registrar is an authority that can assiogn domain names directly under one or more top-level domains
+* These domains are registered woith InterNIC, a service of ICANN, which enforce uniquesness of domain names
+* Each domain name becomes registered in a central database known as the WholS database
+* Popular domain registers are:
+  * Amazon
+  * GoDaddy
+  * 123-reg.co.uk
+
+
+
+#### RDS Backups, Multi-AZ, and Read Replicas Lab Summary and Exam Tips
+* There are two types of RDS DB backups:
+  * Automated backups
+  * Database snapshots
+* Automated backups are done during a scheduled maitenance window
+* Dtabase snapshots are triggered manually
+* **Read Replicas**:
+  * Can be Multi-AZ
+  * Used to increase performance
+  * Not used for disaster recovery
+  * Must have automated backups turned on to use
+  * Can be in different regions that primary DB instance
+  * Can be Aurora or MySQL read replica, regardless of primary DB type
+  * Can be promoted to a primary DB instance, however, this breaks the previous read replication to the old master
+* **Multi-AZ**:
+  * Used for disaster recovery
+  * Not used for performance boosting
+  * You can force a failover from one AZ to another by rebooting the primary RDS instnace and selecting force failover
+  * Encryption is supported for the following RDS DB engines:
+    * MySQL
+    * Oracle
+    * SQL Server
+    * PostgreSQL
+    * MariaDB
+    * Aurora
+  * Encryption is done using the AWS KMS service
+  * Once a database is encrypted, the underyling data stored is encrypted, and therefore all future automated backups, read replicas, and snapshots will also be encrypted
+
+
+
+
+<!-- Database stuff =========================================================================-->
+
+### Register a Domain Name Lab
+* Registering a domain name is not free
+* You must include personal contact information when you register a domain name
+* Normally domain names will be ready in 1-2 hours, but can take up to 3 days
+
+#### Register a Domain Name Lab Summary and Exam Tips
+* You can buy domain names directly through AWS
+* Can take up to 3 days for a domain name to register
+
+### Route53 Routing Policies Available on AWS
+* The **Routing Types** on AWS are:
+  * **Simple Routing**
+  * **Weighted Routing**
+  * **Latency-based Routing**
+  * **Failover Routing**
+  * **Geolocation Routing**
+  * **Geoproximity Routing**
+  * **Geoproxmitiy Routing (Traffic Flow Only)**
+  * **Multivalue Answer Routing**
+
+#### Route53 Simple Routing
+* **Simple Routing Policy**: You can only have one record with multiple IP addresses
+* If you specify multiple values in a record, Route53 returns all values to the user in a random order
+* Basically, users can randomly directed to one of the IP addressed assocaited with the record
+* **Naked Domain Name** and **Zone Apex** are synonymous
+* Your browser will cache the actual IP address it got, so you wont actually be getting random IPs every time. TTL also plays into this
+* You can flush DNS to achieve random effects of the Simple Routing Policy, and in relation to the TTL
+
+#### Summary and Exam Tips
+* **Simple Routing Polcy** is the simplest routing policy you can use
+* It consists of a single record, with multiple IP addresses attached to the record
+* Route53 will direct users to one of the IP addreses at random
+* You can use one IP address as well
+
+### Route53 Weighted Routing Policy
+* **Weighted Routing Policy** allows you to split your traffic based on different weights assigned
+* For example, you can weight it to send 90% of traffic to an EC2 in us-east-1, and 10% of traffic to go to us-west-1
+* The EC2 any user will end up at is still somewhat random, its just that the odds have been weighted to specific instances
+* Weighted Routing Policy allows you to set a health check, and then omit EC2 servers from the DNS listings which are failing health checks
+* The health check requires you to specifiy a protocol, and IP address, a host name, a port, and a path, and Route53 will then routinely attempt to establish TCP connection to assess health
+* You can use advanced health check options to change failure threshold, retry interval, etc.
+* You can setup health check failure notifications
+
+#### Summary and Exam Tips
+* **Weighted Routing Policy** splits traffic between EC2 instances based upon configured weightings
+* You can set health checks on individual recrod sets
+* Should a record set fail a health check, it will be removed from Route53 until it passes health check again
+* Record set is the IP addres of a single EC2 instance
+* You can setup SNS notifications for health check failure
+
+### Route53 Latency-Based Routing Policy
+* Allows you to route your traffic based upon the lowest network latency for your end user
+* A.k.a., route the user to the region which will give them the fastest response time
+* To use latency-based routing, you create a latency resource record set for the resource (EC2 or ELB) in each region that hosts your website
+* When Route53 recieves a request, it selects the user with the latency resource record set for the region that fives the user the lowest latency
+* Route53 then responds with the value associated with that recrod set
+
+#### Exam Tips
+* Connects users to a record set based on the loweset latency for the user
+* Can be verified with a VPN connection in differnt locations across the world
+
+### Route53 Failover Routing Policy
+* Failover routing policies are used when you want to create an active/passive setup
+* For examply, you may setup your primary site to be in eu-west-2, and a secondary site in ap-southeast-2 in the event of disaster recovery
+* Route53 will monitor the health of your endpoints using a health check, and fail to secondary path on failure
+
+#### Summary and Exam Tips
+* There is an active and passive site
+* All traffic is directed to active site, unless Route53 detects a failure in the primary site via a health check fail
+* In this event, traffic is redirected to the secondary site
+
+### Route53 Geolocation Routing Policy
+* **Geolocation Routing Policy** lets you choose which traffic a user is routed to based on the geographic location of the user
+* Determined by the location associated with the DNS query origin
+* For example, all queries from Europe could be directed to a set of EC2s running with specific EU features, such as Euro priced items rathern than dollar priced items
+* This is contrasted with Latency Based Routing, which is based off latency metrics rather than strictly on locations
+* Latency based routing is better for performance concerns, whereas Geolocation routing is better when the content returned is specific to different locations, or there are other strictly location based concerns
+
+#### Summary and Exam Tips
+* Send users from specific geographic regions to specific web servers, normally for some geographic/cultural differences in the content served on different web servers
+* Not to be confused with latency based routing, which routes strictly based on which web server will have the lowest netowrk latency for a user
+  
+### Route53 Geoproximity Routing (Traffic Flow Only) Policy
+* **Geoproximity Routing**: lets Route53 route traffic to resources based on the geographic location of the users **AND** the location of the resources
+* You can optionally chose to route more/less traffic to a specific resource by setting a bias value
+* A bias expands/shriknks the size of the geographic region from with the traffic resource is routed
+* Route53 allows you to create extremely complicated traffic routing maps which network engineers would handle
+* To use Geoproximity Routing, you **must** use **Route53 Traffic Flow**
+
+### Route53 Multivalue Answer Routing Policy
+* **Multivalue Answer Routing Policy** lets you configure Route53 to return multiple values, such as IP addresses for your web servers, in response to DNS queries
+* Basically the same as Simple Routing, with the only difference being Multivalue Answer Routing also allows you to incorporate health checks
+* In the event a resource fails a healh check, that record set will not be returned in a DNS query
+* Otherwise, the behaviour is the same as Simple Routing
+* It seems like there's no reason to use Simple Routing if this exists
+
+#### Summary and Exam Tips
+* Users are directed to record sets at random, unless the corresponding resrouce for a record set fails the health check
+
+## DNS Summary and Exam Tips
+* ELB (Elastic Load Balancer) do not have predefined IPv4 addresses; you resolve them using a DNS name
+* Difference between an Alias Record (A-Record) and a CNAME:
+  * The analogy is to a telephone book
+  * An A-Record is a name connected to a phone number 
+  * A CNAME is a name that directs to another name, which then directs to a phone number
+  * In this analogy the phone number is the actual IP address
+* Common DNS types:
+  * SOA Records
+  * NS Records
+  * A Recrods
+  * CNAMEs
+  * MX Records
+  * PTR Records
+* The following are the types of Route53 routing:
+  * **Simple Routing**:
+    * Simple routing policy you an only have one record with multiple IP addresses  
+    * Route53 randomly directs all users to the different records in a random order  
+  * **Weighted Routing**:
+    * Can have multiple records
+    * Users are directed to different records based on weights assigned to each recrod
+  * **Latency-Based Routing**:
+    * Based on users location and the latency on the network to their location
+    * Route53 directs users to records based on which record produces the minimum network latency
+    * While location will impact latency heavily, the decision is based upon latency metric (a.k.a. milliseconds) not actual geograpghic distances or locations
+  * **Failover Routing**:
+    * There is an active record, and a passive
+    * Traffic is directed to the active record, unless failure is detected on the active record
+    * This is determined via a health check
+    * At this point, traffic is automatically redirected to the passive route
+  * **Geolocation Routing**:
+    * Users are directed to specific records (and corresponding web servers) based on their geographic location
+    * Geographic location is determined by the origin of the DNS lookup query
+    * Based upon location users are directed to specific resources dedicated to specific regions
+    * Not based on latency, and theoretically users could be directed to slower resources (although this would be due to a bad implemented configuration)
+    * This is to direct users to specific web servers based upon their location, such as to render a site with euroes attached to list prices rather than dollars
+  * **Geoproximity Routing (Traffic Flow Only)**:
+    * Advanced networking feature that allows you to route traffic of users to resources based on both the location of the users and the location of the resources
+    * You must Route53 traffic flow to do Geaoproximity Routing
+    * You can set bias values, which effectively expand/shrink the size of a geographic region associated with a specific resource and will effect the overall traffic to that resource
+  * **Multivalue Answer Routing**:
+    * Essentially the same as Simple Routing, except with health checks
+    * Can have multiple values in your record sets, and health checks associated with each record
+    * If a health check fails for a record, traffic will automatically stop being routed to this resource until it passes the health checks again
+* Health checks can be set up with respect to invidual record sets against a resource (EC2 or ELB)
+* You can setup SNS notifcations upon health check failure
+
+# VPC
+
+## VPC Overview
+* Recomneds being able to build out your own VPC as a knowledge check for the Exam
+* VPC can be thought of as a personal, private data center in the cloud
+* VPC lets you provision a logically isolated section of the AWS cloud where you can launch AWS resouces in a virtual network that you define
+* In your VPC, you can select your own IP address range, create subnets, and configure route tables and network gateways
+* A use of a VPC might be setting up web servers that are exposed to the internet, but containing database servers on an isolated private network that only the web servers can reach
+* You can also create a Hardware Virtual Private Network (VPN) connection between your corporate datacenter and your VPC to leverage the AWS ckoud as an extension of a corporate data center
+* A bastion host is an EC2 in a public subnet that can be used to SSH to an EC2 in a private subnet
+* Private IP Address rates of note:
+  * **10.0.0.0 - 10.255.255.255 (10/8 prefix)**
+    * Amazon does not actually allow /8 prefix, and the largest subnet you can have is /16
+  * **172.16.0.0 - 172.31.225.255 (172.16/12 prefix)**
+  * **192.168.0.0 - 192.168.255.255 (192.168/16 prefix)**
+    * This is for your home network 
+* These IP Address ranges are defined by the Internet Signed Mumbers Authority as being reserver
+* These ranges are only available on private networks, not public networks
+
+### What can be done with a VPC:
+* Launch instanes into a subnet of your choosing
+* Assign custom IP address ranges in each subnet
+* Configure route tables between subnets
+* Create internet gateway and attach it to our VPC
+* Much better security control over AWS resources
+* Instance Secuirty Group
+* Subnet netowrk access control lists (ACLS)
+
+### Default VPC vs Custom VPC
+* Default VPC is user friendly and allows you to deploy instances immediately
+* All subnets in defualt VPC has a route out to the internet
+* Each EC2 instance has both a public and private IP address
+* You can recover the default VPC, but dont delete it
+
+### VPC Peering
+* Allows you to connect one VPC with another via a direct network route using private IP Addresses
+* Instances behave as if they were on the same private network
+* You can peer VPCs with other AWS accounts as well as with other VPCs in the same account
+* VPC peering is done in a **star configuration**, meaning there is 1 central VPC and more can peer to it, but there is not transitive peering
+* You can peer between VPCs in different regions
+
+### VPC Overview Summary and Exam Tips
+* Think of a VPC as a logical data center on the cloud
+* Consists of IGWs (or virtual private gateways), route tables, network access control lists, subnets, and security groups
+* 1 subnet always will be in 1 Availability zone, and a subnet cannot span multiple AZs
+* Security Groups are stateful, Network Access Control Lists are stateless
+* Basically means that Network Access Control Lists can have allow and deny rules, whereas security groups only have explicit allow rules
+* There is no transistive peering
+
+### Create youw own Custom VPC Lab Part 1
+* A subnet under a VPC cannot span multiple AZs.
+* Auto-assign public IP address is turned off by default, and will need to be enabled to create a public subnet
+* Amazon automatically reserves the first four and last four IP Addresses in each subnet CIDR block, and these cannot be assigned to an EC2 instance
+* For example, for the CIDR block `10.0.0.0/24` the following five IP addresses are reserved:
+  * `10.0.0.0`: Network Address
+  * `10.0.0.1`: Reserved by AWS for the VPC router
+  * `10.0.0.2`: Reserved by AWS. The IP Address of the DNS server is always the base of the VPC network range plus two;l however, AWS also reserves the base of each subnet range plus two. For VPCs with multiple CIDR blocks, the IP address of the DNS server is located in the primary CIDR.
+  * `10.0.0.3`: Reserved by AWS for future use
+  * `10.0.0.255`: Network broadcast address. AWS does not support broadcast in a VPC, therefore they reserve this address
+* Using `10.0.1.0` is conventionally used as the public subnet (I think this is what he said)
+* To enable auto assign public IP address used the related actions on a subnet and use `Modify auto assign IP settings`
+* This will make it so when EC2s are launched into this subnet they automatically recieve a public IP address
+
 
 
 
