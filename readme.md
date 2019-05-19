@@ -1585,15 +1585,17 @@ Charged for:
 * Using `10.0.1.0` is conventionally used as the public subnet (I think this is what he said)
 * To enable auto assign public IP address used the related actions on a subnet and use `Modify auto assign IP settings`
 * This will make it so when EC2s are launched into this subnet they automatically recieve a public IP address
-
-
-
-
-
-
-
-
-
+* Even with a public subnet, you will need an internet gateway in order to allow incoming connections to the EC2s in the public subnet
+* Creating an interet gateway can be done with a button in the console when viewing the VPC
+* When a VPC is created, it must also be attached to the VPC it is intended to act on
+* You cannot attach multiple internet gateways to a single VPC. **One internet gateway per VPC**
+* After creating an internet gateway, you will need to create a main route that will be the route out to the internet
+* By defualt in the route table, all subnets in a VPC wil have routes added to allows the subnets to communicate with each other over IPv4 and IPv6
+* If you create a route out to the internet in your main route table, every subnet you create by default would be public to the internet
+* This is a security concern, so to improve this, you normally make your main route table private and then use seperate route tables for the public subnets
+* To create a route out to the internet, in a route table add a route for `0.0.0.0/0` as the Destianation, and Internet Gateway as the Target, and select your Internet Gateway instance
+* To add a route out to the internet using IPv6, add a route with `;;/0` as the destination, and Internet Gateway as the Taret, and select your Internet Gateway instance
+* 
 
 
 <!-- ==================================================================================================== -->
