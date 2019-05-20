@@ -1615,6 +1615,39 @@ Charged for:
 * To allowing pinging of a server, use allow `All ICMP`
 * Conventianally, it is a good practice to create a seperate security group for your private subnet where you explicitly allows connections only from the public subnet, not the entire internet
 * You can SSH to the private subnet by placing your private key on a public EC2 and SSHing from the public EC2 to the private EC2; however, this is a bad idea and should be done using a bastion host
+* Unless you create a internet route out from a private subnet, it will not be able to use commands like `yum` or `curl`
+
+### NAT Instances and NAT Gateways Lab
+* 9/10 you will use a NAT Gateway over a NAT Instance
+* NAT Instances are an  individual EC2 isntance that allows private subnets to communicate out to internet without being exposed as public
+* A NAT Gateway is a highly avaialable gateway that allows private subnets to communicate out to internet without being exposed as public
+* You can launch a NAT Instnace by searching ***NAT*** in the AMI search bar when laucnhing an EC2
+* You should notice that a NAT instance has a public IP address
+* Each EC2 automatically runs a **Source/Destination Check** by default
+* This means the EC2 must be the source or destination of any traffic it recieves
+* A NAT instance must be able to sned/recieve traffic when the source or destination is not itself
+* Therefore, for NAT instances you must disable source/destination checks
+* The NAT instance is like a bridge between the private subnet and the internet gateway
+* You will also need to create a route in your default route table for the VPC
+* Do this by creating a route to the internet, using `0.0.0.0/0` as the destination and the instance ID of the NAT instnace for the Target
+* Using a NAT instance is unfavourable because:
+  * It is a single instance that all traffic is directed through, creating a bottleneck
+  * It has a single point of failure, if the NAT instance ever fails
+* For a more highly scalable solution, use a NAT Gateway
+* You should create your NAT Gateway in your public subnet
+* You then edit your route table and add a route in the main root table to allow route out to internet and use the NAT Gateway as the target
+* NAT Gateways can take some time to provision
+
+#### NAT Instances and NAT Gateways Lab Summary and Exam Tips
+* NAT Instances are out of date and you should almost always use NAT Gateways
+* **NAT Isntances**:
+  * Have to manually disable source/destination checks
+  * NAT instnaces must be in a public subnet
+  * There must be a route out of the private subnet to the NAT instance in order to access internet from private subnet
+  * The amount of traffic that a NAT instance can support depends on the instance, and the size can be increased/decreased depending on bottlenecking
+  * You can create high availability with a NAT instance using auto-scaling groups, multiple subnets in different AZs, and a script to automate failover 
+
+
 
 
 <!-- ==================================================================================================== -->
@@ -1663,7 +1696,7 @@ Charged for:
 | Main Route |  |
 | Subnet |  |
 | Domain Name System (DNS) |  |
-|  |  |
-|  |  |
+| NAT Gateway |  |
+| NAT Instance |  |
 |  |  |
 |  |  |
