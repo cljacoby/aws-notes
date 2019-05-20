@@ -636,7 +636,7 @@ Charged for:
   * Launch an EC2 instance with a normal, unencrypted root volume
   * Create a snapshot of the EC2 isntance's root volume
   * Copy the EBS snapshot, and select the encrypt option during the copy
-<F4><F4><F4>  * Create an AMI Image from the encrypted root volume copy
+  * Create an AMI Image from the encrypted root volume copy
   * Launch an EC2 instance from the encrypted root volume AMI
 * Once an EBS root volumes is encrypted during a copy, it cannot be unencypted 
 * Launching an EC2 from an AMI built from an encrypted root volume snapshot will limit the types of EC2s you can launch as
@@ -651,9 +651,6 @@ Charged for:
   * Create a copy of the snapshot and select the encrypt option
   * Create an AMI from the encrypted snapshot
   * Use than AMI to launch the new encrypted instacne
-
-
-<!-- ==================================================================================================== -->
 
 ## CloudWatch
 * CLoudWatch is essentially a performance monitoring tool for all other AWS services
@@ -711,6 +708,7 @@ Charged for:
 * You can use the AWS CLI to interact with AWS from anywhere in the world
 * You will need to set up access via IAM
 * Commands themselves are not in the exam, but some basic commands will be useful to know
+* You will need to execute `chmod 400 myKey.pem` on a new private key file when SSHing to the EC2 for the first time
 
 ## Using IAM Roles with EC2
 * Roles are more secure than storing access key and secret access key credentials in an EC2 instance
@@ -1595,7 +1593,28 @@ Charged for:
 * This is a security concern, so to improve this, you normally make your main route table private and then use seperate route tables for the public subnets
 * To create a route out to the internet, in a route table add a route for `0.0.0.0/0` as the Destianation, and Internet Gateway as the Target, and select your Internet Gateway instance
 * To add a route out to the internet using IPv6, add a route with `;;/0` as the destination, and Internet Gateway as the Taret, and select your Internet Gateway instance
-* 
+* After creating a public subnet and a private subnet with the corresponding route tables and internet gateways configured, the next step is to provision EC2s within the VPC
+* To launch EC2s within the VPC use the **Network** select dropdown, and select the VPC instnace
+* Security groups do not span VPCs, and will be specific to the VPC they were created with respect to
+
+#### Create your own Custom VPC Lab Part 1 Sumamry and Exam Tips
+* When you create a VPC, automatically created with it are:
+  * A default route table
+  * A network access control list
+  * A default security group
+* When you create a VPC, it will **NOT** automatically create:
+  * Any subnets
+  * Any internet gateway
+* The AZs listed in your account are consistent for you, but specific to you. Across AWS accounts the AZs are randomzied and the AZ one account lists as `us-east-1a` might be different than another AWS account's `us-east-1a`
+* Amazon always reserves at least **5** IP addressed in your subnet, at the beginning and end of the CIDR block
+* You can only have 1 internet gateway per VPC
+* Security groups cannot span VPCs
+
+### Create your own Custom VPC Lab Part 2
+* By default, EC2s in different security groups will not have access to each other
+* To allowing pinging of a server, use allow `All ICMP`
+* Conventianally, it is a good practice to create a seperate security group for your private subnet where you explicitly allows connections only from the public subnet, not the entire internet
+* You can SSH to the private subnet by placing your private key on a public EC2 and SSHing from the public EC2 to the private EC2; however, this is a bad idea and should be done using a bastion host
 
 
 <!-- ==================================================================================================== -->
@@ -1638,3 +1657,13 @@ Charged for:
 | Online Transaction Processing | OLTP |
 | Online Analytics Processing (OLAP)  |  |
 | DyanamoDB |  |
+| Internet Gateway |  |
+| Virtual Private Cloud (VPC) |  |
+| Route Table |  |
+| Main Route |  |
+| Subnet |  |
+| Domain Name System (DNS) |  |
+|  |  |
+|  |  |
+|  |  |
+|  |  |
