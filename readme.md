@@ -1646,11 +1646,49 @@ Charged for:
   * There must be a route out of the private subnet to the NAT instance in order to access internet from private subnet
   * The amount of traffic that a NAT instance can support depends on the instance, and the size can be increased/decreased depending on bottlenecking
   * You can create high availability with a NAT instance using auto-scaling groups, multiple subnets in different AZs, and a script to automate failover 
+  * This is a pain though
+  * NAT Instances are assigned to a security group just like other EC2s
+* **NAT Gateways**:
+  * Redundant with respect to the availability zone they exist in
+  * You can only have a NAT Gateway in one AZ; they cannot span AZs
+  * They are recommended by AWS over NAT instnace
+  * They start at throughout of 5gps and scale up to 45Gps
+  * No need to patch the OS of NAT Gateways, which you do have to do with NAT instacnes
+  * Not assigned to a securiy group, which a NAT instance is
+  * Automatically assigned a public IP address
+  * No need to disable source/destination checks
+  * If you have resources (EC2s, ELBs) in mmultiple AZs and they share once NAT gateway, in the event the NAT gateway's AZ is down, resoures in the other AZs will also lose internet
+  * In order to prevent this single point of failure, create a NAT gateway in each AZ and configure your routing table to use the NAT gateway which is in the same AZ
+  * This a more AZ independant architecture
+
+### Network Access Contol Lists vs Secrutiy Groups Lab
+* When you create a VPC, there will be a default NACL with two rules of **Rule Number** `100` and `101`. These rules **ALLOW**  all traffic using IPv4 addresses (`0.0.0.0/0`) and IPv6 addresses (`;;/0`)
+* When you create new rules, AWS recomneds the best practice of incrementing the rule number up by 100 from the last IPv4 rule or IPv6 rule depending on which IP version your rule is for
+* When you create a new custom, NACL there will be two rules by defualt which **DENY** all traffic by default
+* To use a custom NACL, you use the `Subnet Associateions` on the NACL instance view
+* NACLs are not stateful, so you must manually allow the outbound rule in addition to the inboud rule. In comparison, Security Groups would automatically allow the corresponding outbound rule
+* When you allow outbound rules with a NACL, you will use an **Ephemeral Port** as the port
+* **Ephemeral Port**:
+  * Are short lived transport protocol ports for Intrenet Protocol (IP) communications
+  * Ephemeral ports are automatically allocated from the predefined range by the IP stack software
+  * On web servers, ephemeral ports may be used on the server end for communication. This is to continue communication with a client that connected initially on a well known port, like 80/443 for HTTP/HTTPS
+  * The ephemeral port allocation is only valid for the duration of the communication session, and after completion or timeout the port becomes reavailable for more use
+  * NAT Gateways use **1024 - 65535** as the ephemeral port range
+
 
 
 
 
 <!-- ==================================================================================================== -->
+
+# Conventional Port-Protocol Association
+| Protocol | Port |
+|  ------- | ---- |
+| HTTP | 80 |
+| HTTPS | 443 |
+| SSH | 22 |
+| SFTP | 22 |
+| MySQL |  |
 
 # Glossary
 | Term | Definition |
