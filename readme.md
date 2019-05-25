@@ -1570,7 +1570,7 @@ Charged for:
 * Basically means that Network Access Control Lists can have allow and deny rules, whereas security groups only have explicit allow rules
 * There is no transistive peering
 
-### Create youw own Custom VPC Lab Part 1
+## Create youw own Custom VPC Lab Part 1
 * A subnet under a VPC cannot span multiple AZs.
 * Auto-assign public IP address is turned off by default, and will need to be enabled to create a public subnet
 * Amazon automatically reserves the first four and last four IP Addresses in each subnet CIDR block, and these cannot be assigned to an EC2 instance
@@ -1597,7 +1597,7 @@ Charged for:
 * To launch EC2s within the VPC use the **Network** select dropdown, and select the VPC instnace
 * Security groups do not span VPCs, and will be specific to the VPC they were created with respect to
 
-#### Create your own Custom VPC Lab Part 1 Sumamry and Exam Tips
+### Create your own Custom VPC Lab Part 1 Sumamry and Exam Tips
 * When you create a VPC, automatically created with it are:
   * A default route table
   * A network access control list
@@ -1610,14 +1610,14 @@ Charged for:
 * You can only have 1 internet gateway per VPC
 * Security groups cannot span VPCs
 
-### Create your own Custom VPC Lab Part 2
+## Create your own Custom VPC Lab Part 2
 * By default, EC2s in different security groups will not have access to each other
 * To allowing pinging of a server, use allow `All ICMP`
 * Conventianally, it is a good practice to create a seperate security group for your private subnet where you explicitly allows connections only from the public subnet, not the entire internet
 * You can SSH to the private subnet by placing your private key on a public EC2 and SSHing from the public EC2 to the private EC2; however, this is a bad idea and should be done using a bastion host
 * Unless you create a internet route out from a private subnet, it will not be able to use commands like `yum` or `curl`
 
-### NAT Instances and NAT Gateways Lab
+## NAT Instances and NAT Gateways Lab
 * 9/10 you will use a NAT Gateway over a NAT Instance
 * NAT Instances are an  individual EC2 isntance that allows private subnets to communicate out to internet without being exposed as public
 * A NAT Gateway is a highly avaialable gateway that allows private subnets to communicate out to internet without being exposed as public
@@ -1638,7 +1638,7 @@ Charged for:
 * You then edit your route table and add a route in the main root table to allow route out to internet and use the NAT Gateway as the target
 * NAT Gateways can take some time to provision
 
-#### NAT Instances and NAT Gateways Lab Summary and Exam Tips
+### NAT Instances and NAT Gateways Lab Summary and Exam Tips
 * NAT Instances are out of date and you should almost always use NAT Gateways
 * **NAT Isntances**:
   * Have to manually disable source/destination checks
@@ -1661,7 +1661,7 @@ Charged for:
   * In order to prevent this single point of failure, create a NAT gateway in each AZ and configure your routing table to use the NAT gateway which is in the same AZ
   * This a more AZ independant architecture
 
-### Network Access Contol Lists vs Secrutiy Groups Lab
+## Network Access Contol Lists vs Secrutiy Groups Lab 1
 * When you create a VPC, there will be a default NACL with two rules of **Rule Number** `100` and `101`. These rules **ALLOW**  all traffic using IPv4 addresses (`0.0.0.0/0`) and IPv6 addresses (`;;/0`)
 * When you create new rules, AWS recomneds the best practice of incrementing the rule number up by 100 from the last IPv4 rule or IPv6 rule depending on which IP version your rule is for
 * When you create a new custom, NACL there will be two rules by defualt which **DENY** all traffic by default
@@ -1674,8 +1674,107 @@ Charged for:
   * On web servers, ephemeral ports may be used on the server end for communication. This is to continue communication with a client that connected initially on a well known port, like 80/443 for HTTP/HTTPS
   * The ephemeral port allocation is only valid for the duration of the communication session, and after completion or timeout the port becomes reavailable for more use
   * NAT Gateways use **1024 - 65535** as the ephemeral port range
+* Rules are read in and set in chronological order (or its the order of the rule numbers I'm not sure)
+* Because of this, any intentional **DENY** rule must be set before an **ALLOW** rule over the same port/protocol
+* An **ALLOW** before a **DENY** for a port protocol will allow it, not deny it
 
+## Network Access Control Lists vs Security Groups Lab 2
+* When you create a VPC, a defualt NACL will be created by defualt as well
+* The default NACL will allow all traffic inbound and outbound for all protocols over all ports 
+* When you create a custom NACL, it will have at the start all traffic inbound and outbound DENIED (Inverse of the default NACL that comes with the VPC)
+* Everytime you create a subnet within a VPC, by default it will be associated with the default NACL
+* You can associate a subnet a different NACL, but every subnet can only be associated with one NACL at a time
+* When you assign a subnet with an existing associated NACL to a new NACL, the old one is removed
+* Conversly, a single NACL can have many subnets associated with it
+* Making a rule change, or associating a subnet to a new NACL will have its take place immediately
+* Rules are done in chronological order, starting with the lowest numbered rule
+* A DENY rule will always enact the denial of IP addresses(s), even if later another rule ALLOWs it
+* NACLs are always evaluated before the Security Groups
+* For example, if you DENY a specific port in your NACL and then allow it in your security group, an incoming connection will never even reach the point for Security Group to evaluate it, as the coneection will have been rejected  
+* NACLs use seperate rules for inbound and outbound traffc, and each rule can reseptively ALLOW or DENY the flow of traffic. Different in comparison to SGs.
+* NACLs are stateless, meaining responses to allowed inbound traffic are subject to the rules of outbound traffic rather than automatically being granted. Difference in comparison to SGs.
 
+## Custom VPCs and ELBs Lab
+* ELBs can be desingated as internet facing or internal
+* When provisioning an ELB, you will need at least 2 public subnets
+
+## VPC Flow Logs
+* **VPC Flow Logs** are a feature that let you capture info on the IP address traffic going to and from your the network interfaces of your VPC
+* Flow Log data is stored in the AWS CloudWatch Logs service, and flow logs can be viewed via that service
+* Flow logs can be created at 3 levels:
+  * VPC level
+  * Subnet Level
+  * Network Interface Level (ENI)
+* CloudWatch is located uner the service category Management and Governance
+* You will need to create a new log group in CloudWatch to view the flow logs
+* You can also send Flow Log data to an S3 bucket, if you dont want to use CloudWatch to peruse the logs
+
+### VPC Flow Logs Summary and Exam Tips
+* You cannot enable flow logs for VPCs that are peered with another VPC unless the peer VPC is in your account
+* You cannot tag flow logs
+* Once you've created a flow log, you cannot change its configuration. For example, you cannot associate a different IAM role with the flow log
+* **IP Traffic NOT Monitored**:
+  * Traffic generated by instances when they contact the Amazon DNS server. Caveat  is if you use your own DNS server, in which case all of that will be logged
+  * Traffic generated by Windows instance for Amazon Windows license activation
+  * Traffic to and from 169.254.169.254 for instance metadata
+  * DHCP traffic
+  * Traffic to the reserved IP addresses to the default VPC router
+
+## Bastion Hosts   
+* A **Bastion Host** is a special purpose computer on the network specifically designed/configured to whithstand attacks
+* The computer generally hosts a single application (i.e. proxy server) and all other applications are removed to reduce vulnerabilities
+* It is hardened due to its location and purpose, primarily on the outside of a network firewall or in a demilitarized zone and usually involes access from unstusted networks and computers
+* In a conventional configuration, a bastion host would be deployed on the public subnet and then accept SSH/RDP connections from the internet (with proper authetnication) and forward the connection to instances on the private subnet
+* The bastion host is like a heavily fortified/secured web server that acts as a secure and trusted gateway to private isntances
+* Using a bastion host limits the need to heavily fortify every private instance, and reduces surface area for attacks
+
+### Bastion Hosts Summary and Exam Tips
+* A NAT gateway or NAT instance is used to provide internet connection to EC2 instances in a private subnet, so that SSH/RDP is not neccessary
+* Basically, NAT gateway and NAT instances allow the EC2s in a private subnet to make internet connections out to do things like software installs and patches
+* A Bastion Host is used to securely administer private EC2 instances using SSH or RDP to access them
+* Bastion Hosts are called Jump Boxes in Australia
+* You cannot use a NAT gateway as a Bastion Host; a seperate Bastion Host must be deployed/configured
+
+## Direct Connect
+* **Direct Connect** is a cloud service that allows you to establish a dedicated network connection from your on-prem resources to AWS
+* Direct Connect allows you to establish a private connectivity between AWS and a datacenter, office, etc. which can:
+  * Reduce netowrk costs
+  * increase bandwith throughput
+  * Provide more consistent network experience than internet based solutions
+* Basically, sets up a dedicated line that connects a customer's datacenter to the AWS public cloud, or their own private VPCs without using the internet
+
+### Direct Connect Summary and Exam Tips
+* Direct Connect directly connects your data center to AWS without using the internet
+* Useful for:
+  * High throughput workloads (ie lots of network traffic)
+  * You need a stable, reliable, and/or secure connection from your datacenter to AWS
+  * An example use would be if you had a VPN connection that keeps dropping due to high throughput or other factors, Direct Connect would be a viable alternative
+
+## VPC Endpoints
+* A **VPC Endpoint** allows you to privately connect your VPC to supported AWS services and VPC endpoint services powered by PrivateLink without requiring an internet gateway, NAT device, VPN connection, or AWS Direct Conect
+* Instances in your VPC do not require public IP addresses to communicate with resrouces within the service
+* Traffic between your VPC and other services does not leave the Amazon network
+* Endpoints are virtual devices
+* They are horizotally scalabled, redundant, and highly avaialable VPC components in your VPC and services without imposing availability risks or bandwith constraints on your network traffic
+* Two types:
+  * **Interface Endpoints**: An elastic network interface (ENI) with a private IP address that serves as an entry point for traffic destined to a supported service
+  * **Gateway Endpoints**: Look like NAT gateways, and supported for S3 and DynamoDB
+* A gatewaty endpoint can be used to have your EC2 isntances in your VPC to transfer files to S3, which exists on the general AWS cloud rather than in the VPC
+
+### VPC Endpoint SUmmary and Exam Tips
+* A VPC endpoint enables you to privately connect your VPC to supportd AWS services and VPC endooint services powered by PirvateLink without using:
+  * An internet gateway
+  * A NAT device
+  * VPN connection
+  * AWS direct connection
+* Instances within your VPC do not require public IP addresses to communicate with other resources in the service
+* Traffic between your VPC and the other service does not leave the Amazon network
+* VPC Endpoints are:
+  * Virtual devices
+  * Horizontally scalable
+  * Redundant
+  * Highly available
+* VPC Endpoints allow communication between instances in your VPC and services withou imposing availability risks or badnwith constraints on your network traffic 
 
 
 
