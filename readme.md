@@ -1775,14 +1775,119 @@ Charged for:
   * Redundant
   * Highly available
 * VPC Endpoints allow communication between instances in your VPC and services withou imposing availability risks or badnwith constraints on your network traffic 
+* Two types of VPC endpoint:
+  * Interface endpoints
+  * Gateway endpoints
+* Gateway endpoints are currently supported for:
+  * Amazon S3
+  * DyanamoDB
 
+## VPC Summary
+
+### VPC General Summary
+* He suggests reviewing VPCs until you can build a VPC with public and private subnets, VPC endpoints, and NAT devices, from scratch, from memory
+* A Virtual Private Cloud or VPC can be thought of as a logical data center in the cloud
+* Components of a VPC:
+  * Internet Gateways (or virtual private gateways)
+  * Route tables
+  * Network Access Control Lists (NACL)
+  * Security Groups
+  * Subnets
+* A subnet is specific to 1 AZ, and cannot span multiple AZs
+* Security groups are stateful, whereas NACLs are stateless
+* There is not transitive peering between VPCs, they must be peered on 1 to 1 basis
+* You can peer VPCs between regions
+* When you create a VPC, by default it will create:
+  * A defualt route table
+  * A default NACL
+  * A default security group
+* **NOT** created by default:
+  * Subnets
+  * Internet gateways
+* AZs are consistent with respect to one AWS account, but may be different between accounts
+* For example between two AWS accounts, the region referred to as us-east-1 may actually different between the two accounts
+* Amazon always reserves 5 IP addresses within your subnet, and these IP addresses will be at the beginning and end of the CIDR block
+* You can only have 1 internet gateway per VPC
+* SGs are specific to a VPC, and cannot span multiple VPC
+  
+### NAT Devices Summary
+* When creating a NAT instance, you must manually disable source/destination checks on the isntance
+* NAT instances must be in a public subnet
+* There must be a route out of the private subnet to the NAT instance in order for the NAT instance to actually do its job
+* The amount of traffic a NAT instnace can support depends on the instance size, and can induce bottlenecking if insuffecient. You can increase the instance size to overcome NAT isntnace bottlenecking, or use a NAT gateway
+* You can make your NAT instances high availability capable using auto scaling groups, multiple subnets in different AZs, and a script to automate failover, or you can just use a NAT gateway
+* NAT instances are always behind a SG
+* AWS recommends almost always using a NAT gateway over a NAT instnace
+* A NAT gateway does not exist behind an SG, in contrast to a NAT instance
+* NAT gateways are:
+  * redundant with respect to the AZ the exist within
+  * Preferred/recommended by AWS
+  * Starts at 5Gbps and scales up to 45Gbps
+  * No need to patch or update software, which you would with a NAT instance
+  * Automatically assigned a public IP addresss
+* When you create a NAT gateway you will need to update your route table to give the NAT gateway a route out to the interent
+* You do not need to manually disable source/destination checks with a NAT gateway
+* If you have resources in multiple AZs and they share one NAT gateway, this creates a single point of failure and if that NAT gateway goes down, all the resources in all the AZs lose internet
+* To creaet an AZ redundant architecture, create NAT gateways in each AZ and configure your routing table to ensure that resouces use the NAT gateway in the same AZ
+* Only with this configuration can your setup be considered high availability
+
+### NACLs Summary
+* Your VPC automatically comes with a default NACL, which by default allows inbound and outboudn traffic
+* You can create custom NACLs, which by defualt when you create them will be set to deny all indbound and outbound traffic
+* Each subnet in your VPC must be associated with an NACL, and if you dont explicitly make the assignment, a subnet will be associated with the default NACL
+* You can block specific IP addresses on specific ports with NACLs, which you can never do with an SG
+* NACLs contain a numbered list of rules, which are evaluated in order starting with the lowest numbered rule
+* NACLs have separated inbound and outbound rules, which can each individually deny/allow traffic on the respective flow direction (this cannot be done with SGs)
+* NACLs are stateless; responses to allowed inbound traffic are subject to the rules for outbound traffic and vice versa. One is not automatically permitted in tandem with the other, which is the case with SGs
+
+### ELBs and VPCs
+* You need at least two subnets to deploy an internet facing load balancer
+
+### VPC FLow Logs
+* You cannot enable flow logs for VPCs that are peered with your VPC unless the peer VPC is also in your AWS account
+* You cannot tag a flow log
+* After you create a flow log, you cannot change its configuration; for example, you can't associate a different IAM role with the flow log
+* Not all IP traffic is monitored:
+  * Traffic generated by instaces when they contact the Amzon DNS server is not monitored
+  * The exception to the above case is if you use your own DNS server, in which case the traffic will be monitored
+  * Traffic generated by a Windows instance for Amazon Windows license activation is not monitored
+  * Traffic to and from 169.254.169.254 for instance metadata is not monitored
+  * DHCP traffic is not monitored
+  * Traffic to the reserved IP addresses for the default VPC router is not moniored
+
+### Bastion Host
+* An instance in a private subnet will connect **OUT** to the internet using a NAT instance or NAT gateway
+* If conversly, you want to SSH/RDP into an instance on a private subnet, you use a bastion host
+* A bastion host is an instance in the public subnet that is bsasically stripped down for security to only allow connections made to private instances with no vulnerabilities, normally from extraneous applications
+* Bastion hosts are sometimes called jumpboxes
+* Key difference between NAT device and Bastion Host: A NAT device is used to provide internet traffic to an EC2 instance in a private subnet, whereas a bastion host is used to securely administer EC2 instances on a private subnet via SSH/RDP
+* You cannot use a NAT gateway as a bastion host
+
+### Direct Connect
+* Direct Connect is a service to directly a data center to AWS
+* Useful in cases where you would otherwise have a very high network throughput, or where you need a reliable/stable connection above that of a basic internet service provider
+
+### VPC Endpoints
+* Enable you to privately connect your VPC to supported AWS services powered by PrivateLink without requiring an internet gateway, NAT device, VPN connection, or Direct Connect
+* Instances within your VPC do not require public IP addresses to communicate with resources in the service
+* Traffic betweeen your VPC and other services never leaves the Amaozon network
+* Two types of VPC endpointL
+  * Interface Endpoint
+  * Gateway endpoint
+* For interface endpoint, there are many services supported via the endpoint
+* For gateway endpoints the only Services are:
+  * S3
+  * DyanamoDB
+
+# High Availability
+* 
 
 
 <!-- ==================================================================================================== -->
 
 # Conventional Port-Protocol Association
 | Protocol | Port |
-|  ------- | ---- |
+| -------- | ---- |
 | HTTP | 80 |
 | HTTPS | 443 |
 | SSH | 22 |
