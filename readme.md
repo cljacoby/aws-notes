@@ -1880,8 +1880,61 @@ Charged for:
   * DyanamoDB
 
 # High Availability
-* 
 
+## Load Balancers
+* A load balancer helps you balance a large amount of network traffic over a group of web servers
+* 3 types of load balancers:
+  * **Application Load Balancer** 
+  * **Network Load Balancer**
+  * **Classic Load Balancer** 
+
+### Application Load Balancer
+* Application load balancers are suited for balancing HTTP/HTTPS traffic
+* They operate at Layer 7 and are application-aware. Application aware means it can see ***inside*** the application layer of abstration, such as the request your making and what features/content you're trying to access
+* They are intelligent and you can create advances request routing sending specific requests to specific web servers
+
+### Network Load Balancers
+* Best suited for load balancing of TCP traffic where extreme performance is required
+* Operating at the connection level (Layer 4)
+* Network Load Balancer are capable of handling million of requests per second while maintaining low latency
+
+### Classic Load Balancers
+* The legacy Elastic Load Balancers
+* You can use these to laod balance HTTP/HTTPS applications and user Layer 7 specific features  such as X-Forwarded and sticky sessions
+* You can also use the strict Layer 4 load balancing for applications that rely purely on the TCP protocol
+* You would almost always want to use an Application Load Balancer over Classic Load Balancer; however, if you simply want to do Round Robing load balancing for HTTP traffic, Classic Load Balancers may bbe slightly cheaper
+* If your applications stops responding, the ELB will respond with a 504 response
+* The root cause could be in the application or the databse, but the 504 indicates that the Load Balancer hit a problem and did not get a response from the web server instance
+
+### X-Forwarded-For Header
+* Because the ELB creates a hop between the user and the web server instance, you cannot obrtain the user's IP from the netowrk connection itself as it will be the ELB IP
+* If you need the users IP at the web server instances, you can use the **X-Forwarded-For** header, which will have the original requesters IP that was routed through the ELB
+
+### Load Balancer Summary and Exam Tips
+* 3 types of ELB:
+  * **Application Load Balancer**: Smart load balancers with application specific routing cabability
+  * **Network Load Balancer**: High performance cabability, only relying on TCP connection protocol
+  * **Classic Load Balancer**: Legacy load balancers, providing a subset of the features of Application Load Balancer, and slightly cheaper
+* 504 HTTP Response means the gateway has timed out. This means the application has not responded withing the idle timout period
+* Troubleshoot by investingating the application and database layer
+* **X-Forwaded-For** gives the IPv4 address of your end user
+
+## Load Balancers and Health Checks Lab
+* You must create at least two EC2 instance to have an ELB to distrubute load between the instances
+* Load balancers will mark "unhealthy" EC2 instances using the health checks
+* A **Target Group** is a group of EC2 instances to which a select segment of traffic should be directed to. Such as directing Europeas IPs to a specific set of instances
+* Application Load Balancers are quite complicate and intelligent, and there is a reserved acloud guru course just on these
+* For the Solutions Architect Associate Exam, all you need to know is:
+  * Application Load Balancers are much smarter than Classic Load Balancers
+  * Application Load Balancers are for intelligent routing
+  * Network Load Balancers are for use cases needing a fixed IP address, or high performance
+  * Use a Classic Load Balancer if you only need simple distrubution amonst a web server group, and want to save a couple bucks
+
+
+
+
+
+ 
 
 <!-- ==================================================================================================== -->
 
@@ -1940,5 +1993,5 @@ Charged for:
 | Domain Name System (DNS) |  |
 | NAT Gateway |  |
 | NAT Instance |  |
-|  |  |
+| Target Group |  |
 |  |  |
