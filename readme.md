@@ -1930,6 +1930,26 @@ Charged for:
   * Network Load Balancers are for use cases needing a fixed IP address, or high performance
   * Use a Classic Load Balancer if you only need simple distrubution amonst a web server group, and want to save a couple bucks
 
+### ELBs and Health Checks Lab Summary and Exam Notes
+* 3 Types of ELB:
+  * Application Load Balancers
+  * Network Load Balancers
+  * Classic Load Balanacers
+* 504 error means  "Gateway Timout" and it means that the application is not responding within the idle timeout period
+* This means that something is failing, or running to slow at the web server layer or the database layer
+* If you need the IP address of your end user, you can use the value of the **X-Forwaded-For** header
+* Web server instances within the ELB are monitored via the health checks, and labelled as either InService or OutofService
+* Health Cheks check the instance health by making a test request or connection
+* Load Balancers have their own DNS name. You are never given an IP address for an ELB, it is a dynamic value
+* Read the FAQs on Load Balancers before taking the exam
+
+
+
+
+
+
+
+
 
 
 
