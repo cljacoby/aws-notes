@@ -1920,7 +1920,6 @@ Charged for:
 * **X-Forwaded-For** gives the IPv4 address of your end user
 
 ## Load Balancers and Health Checks Lab
-* You must create at least two EC2 instance to have an ELB to distrubute load between the instances
 * Load balancers will mark "unhealthy" EC2 instances using the health checks
 * A **Target Group** is a group of EC2 instances to which a select segment of traffic should be directed to. Such as directing Europeas IPs to a specific set of instances
 * Application Load Balancers are quite complicate and intelligent, and there is a reserved acloud guru course just on these
@@ -1943,9 +1942,78 @@ Charged for:
 * Load Balancers have their own DNS name. You are never given an IP address for an ELB, it is a dynamic value
 * Read the FAQs on Load Balancers before taking the exam
 
+## Advanced Load Balancer Theory
+* Classic Load Balances by default will route each request independantly to the EC2 instance experiencing the smallest load
+* **Sticky Sessions** allows you to bind a user's session to a specific EC2 instance
+* This ensures a user is routed to the same web server instance throughout the duration of their session
+* You might want to use sticky sessions if:
+  * Your application writes data to disk in the EC2 isntance that the user will need to re-access again in another request
+* You can enable Sticky Sessions for Application Load Balancers as well, but the traffic is routed to Target Group Levels
 
+### Troubleshooting Sticky Session Issues
+* There might be an instance where an ELB above a group of EC2s is sending all the traffic to a single, or segment of the EC2 group
+* The solution to this would be to disable sticky sessions
+* This solution may or not be ammenable depending on the actual funtionality of your application
 
+### Cross Zone Load Balancing
+* No Cross Zone Load Balancing means that you cannot balance a load across multiple regions
+* You can have multiple ELB in seperate regions, and use Route53 to split load between the ELBs; however, the split will be proportional to the number of ELBs, not the number of individual instances in total behind the respective ELBs
+* This means for example that if there were 4 instances behind one ELB in `us-east-1a` and 1 isntane behind an ELB in `us-east-1b`, then the 4 would each recieve 12.5% of the total load and the 1 would recieve 50% of the total load
+* You can enable Cross Zone Load Balancing, which would enable the ELBs to route requests to instances in the other region, not just the same region as the ELB
+* In the previous example, the ELB in `us-east-1b` with only 1 EC2 in the same region would wind up sending a lot of its traffic to the 4 instances in `us-east-1a` 
+* A common scenario for this would be if an admin logged in and notices that the engineers have one ELB and 4 EC2s in `us-east-1a` and 2 EC2s in `us-east-1b`
+* The admin notices that all the traffic is going to the `us-east-1a` instances, and none to the `us-east-1b` instances
+* The solution is to simply enable Cross Zone Load Balancing
 
+### Path Patterns
+* You can create a listener with rules to forward requests based on the URL path
+* This is known as **Path Based Routing**
+* An example would be route general request to one target group, and route image requests to a different target group
+* A common scenario for this would be an admin noticing that all the image/media content would be hosted on a specific target group, and requests for this 
+
+### Advanced Load Balancer Theory Summary and Exam Tips
+* Sticky sessions lets you route users to the same EC2 session behind an ELB throughout the duration of their session
+* This is useful if you need to store information locally on the instance
+* Cross Zone Load Balancing lets you balance a load across multiple availability zones
+* Cross Zone Load Balanching does this by letting an ELB in one region direct traffic to EC2s in another region
+* Path patterns allows you to direct traffic to different EC2 instances based on the info contained in the request, namely the URL path
+
+## Launch Configuration and Auto Scaling Groups Lab
+* A **Launch Configuration** is a the paramters for launching an individual EC2 isntance within an autoscaling group such as:
+  * IAM role
+  * Bootstrap script
+  * VPC
+  * Public IP address assigment setting
+  * Storage settings
+  * Basically all the same info used to launch a normal EC2 
+* An **Auto-Scaling Groups** is a group of EC2s which will automatically scale up and down based on the traffic to the group
+* You can use multiple subnets to let the Auto Scaling Group assign instnaces into
+* You can load balance the instanes launched by the Auto Scaling Group using an automatically laucnhed ELB
+* You set a metric to define when to start scaling the group up/down, such as current CPU usage
+* You can set an interval of time to allow new instances to startup before they actually take on part of the traffic load
+* You can setup notifications on when scaling happens
+* You can set a minimum number of EC2 to start the Auto Scaling Group with
+* The minimum sclaing number will provision new instances if the original from launch fail or are terminated
+* When you delete an Auto Scaling Group, the underlying EC2 instances will also be deleted
+
+## HA (High Availability) Architecture
+* The exam contains a lot of scenario based question around HA design
+* The first principle of HA architecture is: **You should always plan for failure**
+* Netflix pioneered a concept of the Simian Army Project, which would go and delete production instances, auto scalin groups, or AZs and tested their failover response
+
+### HA Architecture Summary and Exam Tips
+* Always design for failure
+* Use multiple AZs and multiple regions whenever you can
+* Know the difference between Multi-AZ and Read Replicas for RDS
+* Know the difference between scaling out and scaling up:
+  * Scaling out is adding additional instances to distribute load, such as with an auto scaling group
+  * Scaling up is increasing the capabilities of individual instances, such as upgrading instances from T2 Micro to T2 Large
+* Always consider the cost factor
+* Know the different S3 storage classes
+* Know that S3 and S3 IA are HA, but S3 Reduced Redundancy and S3 Single AZ are not
+ 
+## Building a Fault Tolerant Word Press Site Lab Part 1 - Setup
+* 
 
 
 
@@ -2014,4 +2082,5 @@ Charged for:
 | NAT Gateway |  |
 | NAT Instance |  |
 | Target Group |  |
-|  |  |
+| Sticky Session |  |
+| Path Based Routing |  |
