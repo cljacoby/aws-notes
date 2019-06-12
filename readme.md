@@ -2012,17 +2012,44 @@ Charged for:
 * Know the different S3 storage classes
 * Know that S3 and S3 IA are HA, but S3 Reduced Redundancy and S3 Single AZ are not
  
-## Building a Fault Tolerant Word Press Site Lab Part 1 - Setup
-* 
+## Building a Fault Tolerant Word Press Site Lab
 
+### Part 1
+* Uses CloudFront to dsitrubute content
 
+### Part 2
+* Uses a startup script which installs Apache web server and Wordpress
+* Sets the Wordpress database host to the host name of the RDS instance
+* The Worpress installation will initially fail, reporting `unable to write to wp-config.php`, which is because this file doesnt exist and must be created on the EC2 at /var/www/html/
+* You copy and paste the sample `wp-config.php` file supplied via the Wordpress UI
+* Copies all files in the `/var/www/html/wp-content/uploads` directory to S3 using `aws s3 cp --recursive {dir}`
+* To add redundancy, he copies the entire `/var/www/html` to s3 as well to another bucket
+* Copying the `/var/www` effectively copies the entire Wordpress site to s3 so it can be restored to another EC2 instnace, possibly with an autoscaling group
+* Using the hidden file `/var/www/html/.htaccess` you can set a rewriterule, which allows serving all of the uploads (like images) from a different server rather than the Wordpress's EC2
+* You should set the `rewriterule` to the CloudFront CDN's host name
+* You must also set `RewriteEngine on`
+* You can use `aws s3 sync {dir} {bucket}` to sync the file systems between a directory on the EC2 and a bucket on S3
+* There is a file `/etc/httpd/httpd.conf` which is the Apache web server config file
+* If you edit this file, its wise to make a backup first
+* In this file, you can enable `AlloOverride All` which will allow Wordpress to redirect uploads serving to the CloudFront CDN host
+* Its a good idea to restart the httpd service after editing the conf file using `service httpd restart`
+* You must enable the media s3 bucket containing the uploads files to be publically acceptable
+* The next step is to create an ELB, and he uses an Application Load Balancer
+* He sets up the health checks by trying to load /healthy.html from the EC2s under the ELB
+* Then he uses Route53 to create a domain which points to the ELB
+* He creates a record set which uses a naked domain name and alias which points to the ELB
+* He then places the EC2 instance with the Wordpress site to the target group of the ELB
+* He notes that DNS and CloudFront settings take time to propogate, so give time when settings up
 
-
-
-
-
-
- 
+### Part 3: Adding Resiliance and Auto-Scaling
+* The original EC2 instance becomes the **Writer Node** which is what the admin team will use to push new changes
+* Changes from the Writer Node propogate changes to the s3 bucket
+* Then a fleet of EC2 instances poll and pull changes from the s3 bucket
+* The Route53 then directs public users to the public fleet via the ELB, which distributes users accordingly
+* He uses cron to setup a recurring cron job in the reader nodes to poll s3, look for changes, and pull any new changes
+* The cron statement he uses is `*/1 * * * * root aws s3 sync --delete {s3://your-bucket} /var/www/html`
+* The cron command is saved to `/etc/crontab`
+*  
 
 <!-- ==================================================================================================== -->
 
