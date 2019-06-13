@@ -2049,7 +2049,92 @@ Charged for:
 * He uses cron to setup a recurring cron job in the reader nodes to poll s3, look for changes, and pull any new changes
 * The cron statement he uses is `*/1 * * * * root aws s3 sync --delete {s3://your-bucket} /var/www/html`
 * The cron command is saved to `/etc/crontab`
-*  
+* He creates an image of the first EC2, and uses this image to launch all of the reader nodes
+* He then updates the cron command for the first EC2, which is the writer node
+* The cron command syncs the changes on the writer node to the s3 bucket
+* The cron command is `*/1 * * * * root sync --delete /var/www/html s3://{your-bucket}`
+* Dont make the writer node an EC2 which traffic can be routed to
+
+### Part 4: Cleaning Up
+* He simulates failover of RDS by doing a reboot of the RDS database instance
+* When you reboot, there is an option for "Reboot with Failover", which reboots the RDS into another AZ
+* He deletes the AutoScaling groups first, which deletes the EC2s under them
+* Then delete the Load Balancer and the target groups
+* Before removing the target groups, remove the target instances
+* Then delete the writer node, possibly creating an AMI of the writer node first if you ever need to restore
+* Lastly delete the CloudFront CDN, which can take ~15 minutes to take effect
+
+### CloudFormation 
+* CloudFormation is a service to automate the spinup of an applicaton stack (basically the entire process from parts 1-4)
+* You basically build out a static template that can be launch the full stack of a cloud based application
+* CloudFormation can use rollback triggers to monitor spinup process and bail if any threshholds are hit
+* AWS QuickStart provides templates to launch projects other people have configured and published
+* CloudFormation is a pretty wide and complex tool, and can be used to deploy large applications
+* An entire CloudFormation stack can easily be deleted using the CloudFormation service in the AWS console
+
+#### CloudFormation Summary and Exam Tips
+* CloudFormation is a way of completely scripting your cloud environment startup
+* QuickStart is a collection of pre-existing CloudFormation scripts
+ 
+### Elastic Beanstalk
+* Elastic Beanstalk is like a much simple version of CloudFormation, which is wide and complex but allows for much more control
+* Elastic Beanstalk is under compute service
+* Elastic Beanstalk basically just resolves to creating the regular AWS resources like EC2s, ELBs, AutoScaling Groups, s3 buckets, security groups, etc.
+* Deleting an Elastic Beanstlak applicaiton will delete all the resources created by it
+
+#### Elastic Beanstalk Summary and Exam Tips
+* Elastic Beanstalk lets you deploy and manage full application stacks without worring about the underlying infratstucture
+* You upload an application, and Elastic Beanstalk will automatically handle:
+  * Provisioning
+  * Load Balancing
+  * Scaling
+  * Health Monitoring
+* Simpler and easier to use the CloudFomration, but less specific control
+
+## High Availability Architecture Summary
+
+### Load Balancers
+* 3 types of load balancers:
+  * **Application Load Balancers**
+    * Layer 7 aware (application logic level)
+    * Typical ELB choice
+  * **Netowrk Load Balancer**:
+    * Layer 4 aware (Network; TCP connection only)
+    * Highest performance
+    * Provides static IP address
+  * **Classic**:
+    * The legacy load balancer
+    * Do not offer intelligent routing
+    * Cheapest load balancer option
+* 504 error means the gateway has timed out. This means the application is not responding within the idle timeout period. Diagnose at the applicaiton (web server) layer or database layer
+* If you need the IPv4 address of your end user you use the **X-Forwaded-For** header
+* Instances monitored by an ELB are always classified as InService or OutofService, based upon whether or not the isntane is passing a health check
+* Health checks checks the instance health by making a connection or request
+* Load Balancers always have their own DNS name. For Application and Classic Load Balancers, you never get a static IP addresss; however, for Network Load Balancders you do get a static IP
+* Recomends reading the ELB FAQ as there will probably be ~10 ELB questions on the exam
+* There is also a specific, deep dive course on just load balancers
+
+### Advanced Load Balancer Theory
+* **Sticky Sessions** enable you to make sure a user is always directed to the same EC2 isntance throughout the duration of their session
+* This is useful if your storing information on the EC2 that a user will need to re-access
+* You can also consider disabling sticky sessions if you notice poor balance of load between your EC2 instances
+* **Cross Zone Load Balancing** allows you to load balance across multiple availability zones
+* **Path Patterns** allow you to direct traffic to different EC2 isntances based on the URL contained in the request
+* This is useful if you want to host all media content on specific instances 
+* **CloudFormation** is a way of completely scripting your cloud environment
+* **Quick Start** is a collection of CloudFormations scripts made avaialble for your use to quickly launch environemnts
+* **Elastic Beanstalk** is a service that allows you to just upload your application, and will autoatically handle the provisioning and scaling
+* CloudFormation is much more powerful than Elastic Beanstalk, but is far more complicated and takes time to learn whereas Elastic Beanstalk is easy to start immediately
+* https://www.quora.com/What-are-the-differences-between-reliability-availability-resiliency-and-fault-tolerance-in-IT-systems
+* Know the specific definitions of **Resliancy**, **Durability**, **Reliability**, **Availability** 
+
+
+
+
+
+
+
+
 
 <!-- ==================================================================================================== -->
 
