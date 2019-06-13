@@ -2128,6 +2128,17 @@ Charged for:
 * https://www.quora.com/What-are-the-differences-between-reliability-availability-resiliency-and-fault-tolerance-in-IT-systems
 * Know the specific definitions of **Resliancy**, **Durability**, **Reliability**, **Availability** 
 
+# AWS Applications
+
+## SQS
+* SQS is a web service that gives you access to a message queue that can be used to store messages while waiting for a computer to process them
+* SQS is a distributed queuing system that enables web service applications to quickly and reliably queue messages that one component in an application generates and another consumes
+* **Example**: Meme Creation Web Site
+  * User creates a meme
+  * User uploads an images file to the website for meme-ing
+  * The upload goes to an s3 bucket
+  * The upload to the bucket triggers a lambda function
+  * The lambda function stores information for the meme in SQS, such as the caption the user wants to put on the image
 
 
 
