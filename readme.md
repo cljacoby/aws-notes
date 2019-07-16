@@ -2133,15 +2133,261 @@ Charged for:
 ## SQS
 * SQS is a web service that gives you access to a message queue that can be used to store messages while waiting for a computer to process them
 * SQS is a distributed queuing system that enables web service applications to quickly and reliably queue messages that one component in an application generates and another consumes
-* **Example**: Meme Creation Web Site
-  * User creates a meme
-  * User uploads an images file to the website for meme-ing
-  * The upload goes to an s3 bucket
-  * The upload to the bucket triggers a lambda function
-  * The lambda function stores information for the meme in SQS, such as the caption the user wants to put on the image
+* In sum, SQS is a system that allows you to dedouple components of an application so they run independanly
+* This eases message managmeent between components
+* Any component of a distributed application can store messgages in a fail-safe queue
+* Messages can contain up to 256KB of text in any format
+* Any component can later retrieve the messages via an API
+* The queue acts as a buffer between the components producing and saving data, and the components recieving data and doing processing
+* This means the queue resolves issues that arise if the produced is prodicing work faster than the consumer can process the load
+* Also helps if either the produced or the consumer has only intermittent network connection
+* Can apply auto-sclaing to the processing nodes based on number of messages in the queue to scale up
+* Two types of queues:
+  * **Standard Queues (defualt)**
+  * **Fifo queuues (First in First out)**
+
+### SQS Examples
+* Meme Creation Web Site
+  1. User creates a meme
+  2. User uploads an images file to the website for meme-ing
+  3. The upload goes to an s3 bucket
+  4. The upload to the bucket triggers a lambda function
+  5. The lambda function stores information for the meme in SQS, such as the caption the user wants to put on the image
+  6. Message in SQS contains information to create meme, such as the captions and the location of the image file in the s3 bucket
+  7. Fleet of EC2 instances polls the SQS queue, grabs a message, and gets the image file and the data and runs program to make meme
+  8. Places finished meme back on the s3 bucket
+* Travel Website Example:
+  1. Query to the EC2 web server with date information
+  2. Stores the query information in the SQS queue
+  3. EC2 fleet polls the SQS queue and goes to many different airline information looking for pricing information
+  4. The gathererd information is then sent back to the original web server instance
+
+### Amazon Standard SQS queue
+* Standard queue lets you have nearly unlimited number of transactions per queue
+* SQS garauntees that at least one copy of a message will be processed; however, on occasion two copies of a message might get processed upon
+* Standard queues provide best effort ordering, meaning that messages are generally popped in the same order they were recieved; however, this is not explicitly garaunteed
+
+### FIFO Queueu
+* Gaurenteed First in First out ordering of queueu execution
+* Gaurenteed one message processed upon, no chance of duplicates
+* Limited to 300 transactions per second
+
+### SQS Summary and Exam Tips
+* SQS is pull based, not push based. EC2 instances make a call to the queueue and pull a message
+* Messages are limited to 256kb in size. This can be expanded upon, but by using s3 for the storage
+* Messages can be kept in the queueu from 1 minute to 14 days; the default retention period is 4 days
+* **Visibility Time Out** is the amount of time that the message is invisible in the SQS queue after a reader picks up the message
+* Provided the job is processed before the visiblity time out expires, the message will then be deleted from the queue
+* If the job is not processed within that time, the message will become visible again and another reader will pick it up and process it
+* This could result in the same message being delivered twice
+* The visibility timeout maximum is 12 hours
+* SQS gaurentees that your messages will be processed at least once
+* Amazon SQS long polling is a way to retrieve messages from your Amazon SQS queues
+* Long polling doesnt return a message a response until a message arrives in the queueu or the long poll times out
+
+## Simple Work Flow Service (SWF)
+* **SWF** is a web service that allows you to easily coordinate work across distributed application components
+* Tasks represent invocations of various processing steps in an application which can be performed by executable code, web service calls, human actions, and scripts
+* Generally, SWF is a service that helps loop in human interactions and manual processes
+
+### SWF Actors
+* An SWF Actor of the following Worker Types:
+  1. **Workflow Starters**
+    * An application that can initiate a workflow
+    * Could be an e-commerce website, or a mobile app, etc.
+  2. **Deciders**:
+    * Control the flow of tasks in a workflow execution
+    * If something has completed or failed, a decider chooses what to do next
+  3. **Activity Workers**:
+    * The workers which carry out activites
+* These worker types are specific to SWF
+
+## SNS
+* **Simple Notification Servicer**
+* A simple service to publish messages from an application to subscribers or other applications
+* Can do push notifications to Apple, Google, Microsoft, and FireOS devices
+* Can also deliver notifications via email, SMS, or an HTTP endpoint
+* Allows you to group multiple recepients using topics
+* A **topic** is a an access point for allowing recepients to dynamically subscribe to identical copies of a notification
+* For example, topics might be billing or auto-scaling
+* Once topic can support deliveries for multiple distribution types, such as email, SMS, and HTTP
+* To prevent messages from being lost, all messages are published reduntantly across multiple AZs
+
+### SNS vs SQS
+* Both messaging services in AWS
+* SNS is push based, whereas SQS is pull based
 
 
+### SNS Summary, Benefits, and Exam Tips
+* SNS gives instantanesou, push based delivery (no polling)
+* Simple API and easy integration with applications
+* Flexible message delivery over multiple transport protocols
+* Inexpensive, pay-as-you-go model
+* Web based in the AWS console (simple and easy to use)
 
+### Summary, Exam Tips, and SQS vs SWF
+* SQS has a retention period of up to 14 days, with SWF workflow executions can last up to 1 year
+* Amazon SWF presents a task-oriented API, whereas Amazon SQS offers a message-oriented API
+* Amazon SWF ensures that a task is assigned only once is never duplicated; whereas (standard) SQS allows for occasional duplications
+* Amazon SWF keeps track of all the tasks and events in an application. With SQS you need to implement your own application-level tracking, especially if your applications uses multiple queries
+
+## Elastic Transcoder
+* Media transcode in the cloud
+* Convert media files from their original format to different formats
+* Provides transcoding presets for popular output formats, which means you don't need to guess which settings work best on a particulur device
+* Pay based on the minute that you use to transcode, and the resolution at which you transcode
+
+### Elastic Transcoder Summary and Exam Tips
+* Elastic Transcoder converts media files from their original source formats and converts them to other formats to play on smartphones, tablets, PCs, etc.
+
+### API Gateway
+* API Gateway is a service that makes it easy to publish, maintain, and scale APIs
+* You create an API that acts as a door to your backend applications to access data, run business logic
+* Backend can be code running on EC2s, AWS Lambda, or any other web applications
+* A doorway into your AWS resources
+* Expose HTTPS endpoints to define a RESTful API
+* Can serverlessly connect to services like Lambda and DynamoDB
+* Send each API endpoint to a different target
+* Run effeciently with low cost
+* Scales automatically with traffic
+* Track and control usage using an API key
+* Throttle requests to prevent attacks
+* Define an API (container)
+* Define resources and nested resources (URL Paths)
+* For each resource:
+  * Select supported HTTP methods (verbs)P
+  * Set security
+  * Choose target (such as EC2, Lambda, DynamoDB, etc.)
+
+### Deploying API Gateway
+* Deploy an API to a stage:
+  * Uses API gateway by default
+  * Can use a custom domain
+  * Now supports AWS Certificate Manager: free SSL/TLS certs
+
+### API Gateway Caching
+* Reduce the number of calls to your backend by caching results
+* Improve response time for cached results
+* Caches with respect to a TTL
+
+### Same Origin Policy
+* In computing, the same-origin policy means a web browser will allow scripts contained in a first web page to access data in a second web page, but only if those two web pages are on the same origin
+* This prevents cross site scripting
+* Tools like Postman and Curl ignore this
+* CORS is a way in which the server at the other end of a web request can rekax the same-origin policy
+* **CORS** Cross-Origin Resource Sharing
+* CORS lets restricted resources on a web page to be requested from another domian outside from which the first resource was served
+
+### API Gateway Summary and Exam Tips
+* A door to your AWS environment
+* API Gateway has caching capabilities to increase performance
+* API Gateway is low cost and scales automatically
+* You can throttle API gateway, mainly to prevent attacks
+* You can log results to CloudWatch
+* If you are using Javascript/AJAX, make sure you enable CORS on the API Gateway
+* CORS is enforced by the client
+
+## Kinesis
+
+### Streaming Data
+* **Streamed** data is data that is generated continously by thousands of data sources
+* Examples:
+  * Purchases in an online store (transactions)
+  * Stock prices
+  * Gaming data (as the gamer plays)
+  * Social network data (tweets, a hashtag, etc.)
+  * Geospatial data (where you are on a map, where the ubers are)
+  * iOT sensor data (farmers with sensors across land)
+* Data is generated continously and in small size
+* Amazon kinesis is a platform on AWS to send all of your streaming data to
+* **3 Types** :
+  1. Kinesis Streams
+  2. Kinesis Firehose
+  3. Kinesis Analtytics
+
+### Kinesis Streams
+* There are **Producers**, which stream the data to Kinesis
+* By default all the stored data is only stored for 24 hours, but can be stored to a maximum of 7 dayus
+* Data is stored in **Shards**
+* EC2 instances consume the Shards of data
+* Once the EC2s have finished their process with the data, they can output the data to:
+  * DynamoDB
+  * S3
+  * EMR
+  * Redshift
+* Part of the idea is temporarily storing all of the incoming raw data which is huge, and then persistently store the analytic data long term
+* Shards have a limit of 5 transactions per second for reads, up to a maximum total read rate of 2MB per read
+* SHards have a limit of 1000 records per second for writes, up to a maximum total data write of 1MB per second
+* The data capacity of your stream is a function of the number of shards that you specify for the stream
+* The total capacity of the stream is a sum of the capacity of the shards
+* Shards are only relevant to Kinesis stream, not Kinesis Firehose or Kinesis Analytics
+
+### Kinesis Firehose
+* The many Producers generate data which is sent to the Kinesis Firehos
+* The Kinesis Firehose has lambda function(s) which process the data as it comes in
+* Kinesis Firehose has no internal storage
+* Once the lambda function finishes, it stores its output in s3, which can then forward the data to Redshift or ElasticSearch Cluster
+
+
+### Kinesis Exam Tips
+* Know the difference between Kinesis Streams and Kinesis Firehose and able to chose between the two in a scenario based implementation question
+* Associate shards with Kinesis Streams
+* Associate streaming in general with the Kinesis service; this is the AWS solution for streaming
+* Understand what Kinesis Analytics are. They analyse the incoming raw streaming data
+
+## Web Identity Federation and Cognito
+* **Web Identity Federation** lets you give users access to AWS after they have succesfully authenticated to an external web identity-provider platform like Amazon, Facebook, Google, LinkedIn, etc.
+* Following the succesfull authentication, the user recieves an authentication code from the Web ID provide which they use to obtain temporary AWS credentials
+* AWS solution for Web Identity Federation service is **Cognito**
+* Cognito features:
+  * Sign-up and sign-in to apps
+  * Access for guest users
+  * Acts as identity broker between application and Web ID provider; a.k.a. don't handle your own user credentials
+  * Synchoronize user data for mulitple devices
+  * Recomneded for all mobile applications AWS services
+* The recommeded approach for Cognito:
+  * Authenticate to an external platform like Facebook
+  * Facebook returns an access token from the user credentials
+  * The application sends the Facebook access token to Cognito
+  * Cognito accepts the Facebook, access token, and returns an AWS access token
+  * The access token will relate to provisioned access via IAM an role
+* Cognito creates a seamelss experience across applications; especially on mobile
+* Elimintates need to store AWS credentials locally in applications
+
+### User Pools vs Identity Pools
+
+#### User Pools
+* **User Pools** are user directories and are used to manage sign-up and sign-in functionality
+* Users can sign irectly in to the user pool, or login to an external Identity Provider platform
+* Cognito acts as an Identity Broker between the identity provider platform and AWS
+* Succesfull authentication generates a JSON Web token (JWT)
+
+#### Identity Pools
+* Identity Pools enable provide temporary AWS credentials to access AWS services like S3 or DynamoDB
+* Geared towards authorizing access to AWS resources, whereas User Pools are geared towards authorizing access to the mobile application as a general user
+
+### Web Identity Federation and Cognito Summary and Exam Tips
+* A sample process:
+  1. Succesfully Login to Facebook using Facebook credentials
+  2. Obtain Facebook authentication token, which is sent to Cognito
+  3. Cognito accepts the Facebook access token, and generates a JWT token
+  4. The JWT token is then sent to the identity pool
+  5. The identity pool grants her access as credentials in the form of an IAM role
+  6. Can then access AWS resources
+* Cognito automatically tracks the device type that users are accessing the application from
+* Cognito uses push synchornization to push user data across multiple devices associated to a single User Identity
+* Cognito push notifications are driven by SNS
+* Example of push notifcation synchronization:
+  1. User updates their email address and password in the App
+  2. Cognito sends out silent push notification to all devices associated with the user, such as their phone and Ipad
+  3. All devices synch to the new data
+* Federation allows users to authenticate with an external web identity provider such as Google, Facebook, Amazon
+* The user authenticates first with the Web ID provider and recieves an authentication token, which is exchanged for temporary AWS credentials allowing them to login under an IAM role
+* Cognito is an Identity Broker which handles the interaction between your app and a web identity provider platform
+* User pools are user based, and handle things like user registration, authenticaton, and account recovery
+* Identity pools authorize access to your AWS resources under an IAM role
+
+## Application Summary
 
 
 
