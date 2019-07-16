@@ -2453,3 +2453,5 @@ Charged for:
 | Target Group |  |
 | Sticky Session |  |
 | Path Based Routing |  |
+| User Groups |  |
+| Identity Groups |  |
