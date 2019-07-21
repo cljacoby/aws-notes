@@ -2389,7 +2389,91 @@ Charged for:
 
 ## Application Summary
 
+### SQS Summary
 
+* Simple Queue Service
+* SQS is a way to de-couple the different components of your infrastucture
+* Messages are stored in a queue, and the EC2 isntances will retrieve messages from the queue
+* If an individua EC2 intances fails to process its message, the message stays in the queue and another isntance picks it up for processing
+* Provides failure prevention in relation the processing of each individual message; i.e. a single EC2 instance failure wont cripple your application
+* SQS is pull based; not push based
+* Messages are 256 kB in size
+* You can obtain larger message sizes, but they wont be stored in SQS but instead in S3
+* Messages can be kept in the queue from 1 minute to 14 days; the deafult retention period is 4 days
+* Two types of SQS:
+  1. Standard SQS
+  2. FIFO SQS
+* With Standard SQS, order is not gaurenteed and messages can sometime be delivered more than once
+* With FIFO SQS, order is strictly maintained and messages are delivered only once
+
+* Long polling is a way to retrieve messages from your SQS queue
+* Whereas standard short polling returns immediately, even if the message being queues is empty, long polling doesnt return a response until the message arrives in the queue or the poll times out
+* Long polling provides a way to decrease AWS costs as it can decrease the total number of calls to your queue
+
+### Visibility Timne Out
+* The Visibility Time Out is the amount of time that the message is invisible in the SQS queue after a reader picks up the message
+* Provided the job is processed before the Visiblity Time Out expires, the message will be deleted from the queue
+* If the job is not processed within that time, the message will become visible again and another reader will process it
+* This could result in the same message being delivered twice
+* If you are seing many messages beind processed twice, you may consider increasing your Visiblity Time Out to allow EC2 instnaces more time to process the message
+* SQS gaurentees that your messages will be processed at least once
+
+## SWF vs SQS
+* SWF is simple workflow service
+* SQS has a retention period of up to 14 days; workflow executions can last up to 1 year
+* SWF presents a task-oriented API whereas Amazon SQS offers a message-oriented API
+* Any task based system, specifically those interfacing with human workers, should use SWF rather than SQS
+* SWF ensures a task is assigned only once, and is never duplicated
+* With SQS, messages can be duplicated and this scenario must be handled by the developer if its problematic
+* SWF keeps track of all the tasks and events in an application, with SQS you need to implement your own tracking of you need it
+
+### SWF Actors
+* **Workflow Starters** are applications which can initiate a workflow, such as an e-commerce website and the placements of an order
+* **Deciders** control the flow of activity tasks in a workflow's execution
+* **Activity Workers** carry out the activity tasks, such as people or worker programs
+
+## SNS
+* Simple Notification Service
+* Instantaneous push based deliver; no-polling
+* Simple APIs and easy integration with applications
+* Fleible message delivery over multiple transport protocols
+* Inexpensive pay-as-you-go model with no up-front costs
+* Web based AWS management console offers the simplicity of a point-and-click interface
+
+### SNS vs SQS
+* Both messaging services in AQS
+* SNS is push based
+* SQS is pull based
+
+## Elastic Transcoder
+* A media-transcored in the cloud
+* Converts your media files from an input format to a different output format
+* Transforms format of different media files to accomodate usability on multiple devices, such as computers, smartphones, tablests, etc.
+
+## API Gateway
+* A gateway into your API
+* Provides caching capabilities to increase performance
+* API gateway is low cost and scales automatically
+* Provides support for throttling to ensure costs dont inadvertently skyrocket
+* You can log your resutls to CloudWatch
+* If you are using JavaScript/AJAX requests that uses multiple domains with API Gateway, you need to enable CORS in API Gateway
+* CORS settings, are enforced by the clients browser
+
+## Kinesis Summary
+* Kinesis streams has data persistence
+* By default Kinesis streams will store data in shards for 24 hours, but can be extended for 1 week
+* Always associate question/subject involving shards with Kinesis Stream
+* Conversely, Kinesis firehose has no persistent data storage and most be processed as it comes in
+* A normal way to handle Kinesis Firehose data is to use lambda functions which are triggered on the incoming data, process the data, and store the processed results in S3, Redshift, Aurora, etc.
+* Kinesis Analytics is a service that helps you analyze data in both Kinesis Streams and Kinesis Firehose
+
+## Cognito
+* Cognito allows users to authenticate with a Web Identity Provider such as Google, Facebook, Amazon, etc.
+* The user authenticates first with the Web ID provider and recieves an authentication token, which is exchanged for temporary AWS credentials allowing them to assume an IAM role
+* Cognito is an Identity Broker which handles the interaction between your applications and the Web ID provider so you don't need to write your own code for this
+* **User Pools** are user user based, and drive things like user registration, authentication, account recovery, etc.
+* **Identity Pools** are used to authorize access to your AWS resources, by way of allowing someone to assume an IAM roles
+* 
 
 
 
