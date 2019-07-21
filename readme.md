@@ -2473,7 +2473,59 @@ Charged for:
 * Cognito is an Identity Broker which handles the interaction between your applications and the Web ID provider so you don't need to write your own code for this
 * **User Pools** are user user based, and drive things like user registration, authentication, account recovery, etc.
 * **Identity Pools** are used to authorize access to your AWS resources, by way of allowing someone to assume an IAM roles
-* 
+
+
+# Serverless Architecture
+
+## Brief History of Cloud
+* In the past, all companies owner their own physical hardware, or rented hardware from a service like Rackspace
+* Basically, you owned or rented specific pieces of hardware that you were responsible to setup
+* In the late 2000s, Amazon and Rackspace competed for the Cloud marketshare
+* Amazon launched EC2 in 2006
+* The progression from 2006 to now looks something as follows:
+  * Data Centers
+  * **IAAS** (Infrastructure as a Service)
+  * **PAAS** (Platform as a Service)
+  * Containers
+  * Serverless
+
+## Lambda
+* The ultimate abstraction layer (at least as branded by Amazon)
+* AWS Lambda allows to simply upload code to create Lambda functions, and AWS handles all the server provisioning and maitenance
+* AWS also handles the scaling internally
+* Lambda frequently runs on an event driven basis, and your lambda function will execute in relation to an event such as:
+  * Upload to an S3 bucket
+  * Write to DynamoDB
+* Lambda can also run in relation to HTTP requests, and can perform as the backend of an API
+* Using Lambda as an API uses API Gateway to setup the actual endpoints
+* Each HTTP reqeust to a API Gateway/Lambda function setup triggers a new Lambda execution run time
+* Lambda will scale immediately, and up to very high levels, accomodating millions of HTTP requests throught API gateway
+
+### Lambda Example: Event Driven Backend Processing
+* User uploads an image file to a website, where it is stored in S3
+* This triggers a lambda function
+* The lambda function grabs the image file and associated metadata, and adds a text label to the image file
+* It then triggers another lambda function which returns the output image file with text label to the user
+
+### Lamda Example: HTTP API
+* User makes an HTTP request to an API gateway endpoint
+* API proxies the HTTP request to lambda, which processes the request
+* Lambda returns a response to API gateway, which proxies it back to the user
+
+### Lambda Languages
+* JavaScript (Node.js)
+* Java
+* Python
+* C#
+* Go
+* Powershell
+
+### Lambda Pricing
+* First million requests are free, and then its $0.20 per million requests afterward
+* You are charged on duration basis as well:
+  * You are charged in relation to when your code begins executing to when it finishes
+  * THe price depends on the amount of memory you allocate to your function
+  * You are charged $0.00001667 per GB-second used
 
 
 
