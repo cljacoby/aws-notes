@@ -2577,8 +2577,8 @@ Charged for:
   5. This will add all the neccessary code to interface with the text-to-speech AWS feaure and place the file in your bucket
   6. The defualt Node.js code setups a list of audio hooks that Alexa will recognize and then give a response to, in the case an AWS fact
   7. You need to create an AWS Developer account if you want to run your AWS Alexa Skill build on an actual Echo or hardware
-  8. 
-
+  8. Amazon using SSML markup for data, which stands for Speech Synthesis Markup Language
+  9. You can then hook up your AWS Lambda function to your s3 bucket 
  
 
 <!-- ==================================================================================================== -->
