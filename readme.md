@@ -2500,6 +2500,10 @@ Charged for:
 * Using Lambda as an API uses API Gateway to setup the actual endpoints
 * Each HTTP reqeust to a API Gateway/Lambda function setup triggers a new Lambda execution run time
 * Lambda will scale immediately, and up to very high levels, accomodating millions of HTTP requests throught API gateway
+* Summary of benefites:
+  * No servers
+  * Continous scaling
+  * Super cheap
 
 ### Lambda Example: Event Driven Backend Processing
 * User uploads an image file to a website, where it is stored in S3
@@ -2527,7 +2531,55 @@ Charged for:
   * THe price depends on the amount of memory you allocate to your function
   * You are charged $0.00001667 per GB-second used
 
+### Lambda Summary and Exam Tips
+* Lambda scales out, not up
+* This means that 5 invocations scales out to 5 lambda executions
+* Lambda functions are independant, and 1 event = 1 function execution
+* Lambda is serverless
+* Know which services are serviceless:
+  * Serverless: Lambda, Aurora Servless, S3, DynamoDB, API Gateway 
+  * Servered: RDS (has an opearting system Amazon patches/maintains), EC2
+* Lambda functions can trigger other lambda functions
+* Architectures can grow very complicated using lambda with many different chained functions, and Amazon offers Xray to assist in debugging this
+* Lambda can do things globally, you can use it to back up one S3 bucket to another S3 bucket
+* Know the various entities that can trigger Lambda, and what things cant
 
+## Creating a Servleless Website with API Gateway and Lambda
+* Creates an API backend with AWS Lambda and API Gateway
+* Summary of process:
+  1. Login to AWS and open the lambda service
+  2. Use author from scratch, and start writing code in the editor
+  3. Create or assign a role to your Lambda function's AWS execution
+  4. Assign the **Simple Microservice Execution** as your policy template
+  5. Allocate memory and set the timeout for the lambda function
+  6. Create a new trigger using create new API. This adds an API Gateway endpoint as a trigger for the lambda function
+  7. Open API Gateway's menu for the endpoint, and delete the defualt method
+  8. Create a GET request using Lambda function as the integration type
+  9. Set the correct region and lambda function
+  10. Use Actions dropdown menu and hit Deploy; defualt deployment stage
+  11. You can now invoke the API using the API Gateway endpoint, and the AWS function executes in the background
+  12. You can now setup an index.hmtl page which invokes your API Gateway endpoint in the eventHandler of a button click
+  13. Add the index.html to an s3 page, open the bucket to having public access settings, which is neccessary to use static website hosting
+  14. Add your static files (just the index.html right now) to the public s3 bucket
+  15. Use Route53 to create a record set and create an alias the bucket
+  16. DNS propogation will take a little time to crete the record for the alias
+  17. You can now use the Route 53 alias name as the landing page for your website
+
+## Creating an Alexa Skill Using Lambda
+* Creates an Alexa Skill using AWS Lambda
+* For clarification, Alexa is the cloud service that does audio data processing. Echo is the actual hardware over which Alexa actually runs
+* You can use arbitrary hardware such as a rasperry pi to run AWS Alexa
+* Summary of process:
+  1. Create an s3 bucket and open to public access in the settings, then also create a bucket policy which allows all access
+  2. You an use the test to speech feature in Amazon to convert arbitrary text to an mp3 audio file
+  3. You can output the mp3 of that audio to your s3 bucket
+  4. Create a Lambda function using the AWS Servlerss Application Repository defualt initialization for Alexa SKills Kit
+  5. This will add all the neccessary code to interface with the text-to-speech AWS feaure and place the file in your bucket
+  6. The defualt Node.js code setups a list of audio hooks that Alexa will recognize and then give a response to, in the case an AWS fact
+  7. You need to create an AWS Developer account if you want to run your AWS Alexa Skill build on an actual Echo or hardware
+  8. 
+
+ 
 
 <!-- ==================================================================================================== -->
 
