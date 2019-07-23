@@ -2580,6 +2580,36 @@ Charged for:
   8. Amazon using SSML markup for data, which stands for Speech Synthesis Markup Language
   9. You can then hook up your AWS Lambda function to your s3 bucket 
  
+## Serverless Summary and Exam Tips
+* Lambda scales out, not up, and scales out automatically
+* Lambda functions are independant, and one event (such as by HTTP request) equals one function execution
+* Lambda is serverless
+* Know which services are **NOT** serverless:
+  * RDS is not serverless, as it still has an operating system AWS operates and maintaines
+  * The exception to RDS being serverlss is Aurora, which is serverless
+  * Lambda functions can trigger other lambda functions, and a single top level execution can initiate a chain
+  * Architectures can get complicated with chained lambdas, and AWS offers X-ray to assist in debugging these scenarios
+  * Lambda can do things globally, such as backing up one s3 bucket to another s3 bucket, scheduling functions to run on a cron-like schedule
+  * Know your lambda triggers 
+
+### Comparison of Traditional vs Serverless Architecture
+
+#### Traditional (Virtual Server System)
+* Users connect to an Elastic Load Balancer out front
+* ELB connects to a group of EC2 web servers
+* EC2s optionally connect to a backend database system to store data, normally an RDS
+* Can be made highly available, automatically scalable, and failure recovering
+* Normal bottle neck (assuming you've made generally good/cannonoical design decisions) will be the backed database system
+
+#### Serverless
+* Users connect to API gateway endpoint
+* API gateway proxies request to a lambda function backend
+* Lambda function optionally connects to backend database system as neccessary
+* AWS generally recomends serverless architecture for most applications
+
+ 
+
+
 
 <!-- ==================================================================================================== -->
 
@@ -2623,7 +2653,7 @@ Charged for:
 | Snapshot |  |
 | Elastic File System (EFS) |  |
 | Clustered Placement Group |  | 
-|  Diaster Recovery (DR) |  |
+| Diaster Recovery (DR) |  |
 | Multi-AZ |  |
 | Hardware Service Manager (HSM) |  |
 | Key Management Service (KSM) |  |
@@ -2643,5 +2673,6 @@ Charged for:
 | Path Based Routing |  |
 | User Groups |  |
 | Identity Groups |  |
-
-
+| Lambda |  |
+| Serverless |  |
+| X-Ray |  |
